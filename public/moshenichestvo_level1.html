@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вычисли мошенников</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Новая палитра, согласованная с примером */
+            --primary: #8c77d9;
+            --primary-light: #8c77d9;
+            --primary-dark: #8c77d9;
+            --background: #F0F0F2;
+            --card-bg: #FFFFFF;
+            --text: #8c77d9;
+            --text-light: #5D7196;
+            --accent: #8c77d9;
+            --success: #4CAF50;
+            --warning: #FFA726;
+            --danger: #E57373;
+            --shadow: 0 4px 20px rgba(93, 113, 150, 0.15);
+            --radius: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            background: linear-gradient(135deg, var(--background) 0%, #e8e8f0 100%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            border: 1px solid rgba(93, 113, 150, 0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            padding: 60px 25px 25px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .header p {
+            font-weight: 400;
+            opacity: 0.9;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .level-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+        }
+
+        .hint-indicator {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .hint-indicator:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .hint-popup {
+            position: absolute;
+            top: 60px;
+            left: 20px;
+            background: white;
+            color: var(--text);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            width: 320px;
+            z-index: 100;
+            display: none;
+            border: 1px solid rgba(93, 113, 150, 0.1);
+        }
+
+        .hint-popup::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 20px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid white;
+        }
+
+        .hint-popup.show {
+            display: block;
+        }
+
+        .game-board {
+            background-color: rgba(0, 0, 0, 0.03);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .board-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .board-title i {
+            margin-right: 12px;
+            color: var(--accent);
+        }
+
+        .clues-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .clue-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 12px rgba(93, 113, 150, 0.08);
+            border: 1px solid rgba(93, 113, 150, 0.05);
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .clue-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(93, 113, 150, 0.15);
+            border-color: var(--accent);
+        }
+
+        .clue-card.selected::before {
+            content: "\f024";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+
+        .clue-card.selected {
+            border: 2px solid var(--accent);
+            background-color: rgba(140, 119, 217, 0.05);
+        }
+
+        .clue-card.correct {
+            border: 2px solid var(--success);
+            background-color: rgba(76, 175, 80, 0.1);
+        }
+
+        .clue-card.incorrect {
+            border: 2px solid var(--danger);
+            background-color: rgba(229, 115, 115, 0.1);
+        }
+
+        .clue-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--primary-dark);
+            font-size: 1rem;
+        }
+
+        .dialog-container {
+            margin-top: 25px;
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 12px rgba(93, 113, 150, 0.08);
+            border: 1px solid rgba(93, 113, 150, 0.05);
+        }
+
+        .dialog-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary-dark);
+        }
+
+        .dialog-content {
+            font-size: 0.95rem;
+            border-left: 3px solid var(--accent);
+            background-color: rgba(140, 119, 217, 0.05);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+        }
+
+        .response-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .response-option {
+            padding: 14px;
+            background-color: white;
+            border: 1px solid rgba(93, 113, 150, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .response-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(93, 113, 150, 0.12);
+            background-color: rgba(140, 119, 217, 0.05);
+        }
+
+        .response-option.selected {
+            background-color: rgba(140, 119, 217, 0.2);
+            border-color: var(--accent);
+            font-weight: 600;
+        }
+
+        .response-option.correct {
+            border-color: var(--success);
+            background-color: rgba(76, 175, 80, 0.1);
+        }
+
+        .response-option.incorrect {
+            border-color: var(--danger);
+            background-color: rgba(229, 115, 115, 0.1);
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 0 25px;
+        }
+
+        .btn {
+            padding: 14px 35px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .score-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .score-value {
+            color: var(--accent);
+            font-size: 18px;
+        }
+
+        .hints-panel {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 12px rgba(93, 113, 150, 0.08);
+            margin-top: 25px;
+        }
+
+        .hints-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: var(--primary-dark);
+            text-align: center;
+        }
+
+        .hint-item {
+            margin-bottom: 15px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(93, 113, 150, 0.08);
+            border: 1px solid rgba(93, 113, 150, 0.05);
+        }
+
+        .hint-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 12px 15px;
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .hint-content {
+            background-color: rgba(140, 119, 217, 0.05);
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s, padding 0.3s;
+        }
+
+        .hint-content.active {
+            padding: 15px;
+            max-height: 250px;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .game-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            z-index: 1001;
+            max-width: 90%;
+            width: 400px;
+        }
+
+        .game-message h2 {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+        }
+
+        .game-message p {
+            font-size: 16px;
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        /* Адаптивность для мобильных устройств */
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .header p {
+                font-size: 16px;
+            }
+
+            .board-title, .hints-title {
+                font-size: 18px;
+            }
+
+            .clues-container {
+                grid-template-columns: 1fr;
+            }
+
+            .clue-card {
+                font-size: 0.9rem;
+                padding: 20px;
+            }
+
+            .dialog-content, .response-option {
+                font-size: 0.9rem;
+            }
+
+            .game-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn {
+                width: 100%;
+                padding: 12px;
+            }
+
+            .hint-popup {
+                width: 280px;
+                left: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>Вычисли мошенников</h1>
+            <p>Раскрой обман и защити свои данные!</p>
+            <div class="level-indicator">Уровень 1</div>
+            <div class="hint-indicator">
+                <i class="fas fa-lightbulb"></i> Подсказка
+            </div>
+            <div class="hint-popup">
+                <strong>Как играть:</strong><br>
+                Выберите улики, которые указывают на мошенничество, и правильный ответ в диалоге. Используйте подсказки внизу для помощи.
+            </div>
+        </div>
+        
+        <main class="game-board">
+            <h2 class="board-title"><i class="fas fa-search"></i> Детективная доска с уликами</h2>
+            
+            <div class="clues-container">
+                <div class="clue-card" data-clue="1">
+                    <div class="clue-title">Подозрительный звонок</div>
+                    <p>Получен звонок от сотрудника службы безопасности банка</p>
+                </div>
+                
+                <div class="clue-card" data-clue="2">
+                    <div class="clue-title">Неизвестный номер</div>
+                    <p>Незнакомый номер просит подтвердить личные данные</p>
+                </div>
+                
+                <div class="clue-card" data-clue="3">
+                    <div class="clue-title">Сомнительный сайт</div>
+                    <p>Сайт запрашивает слишком много личной информации</p>
+                </div>
+                
+                <div class="clue-card" data-clue="4">
+                    <div class="clue-title">Сообщение о выигрыше</div>
+                    <p>Пришло сообщение о крупном выигрыше без участия в лотерее</p>
+                </div>
+                
+                <div class="clue-card" data-clue="5">
+                    <div class="clue-title">Срочный перевод</div>
+                    <p>Просят срочно перевести деньги под предлогом помощи родственнику</p>
+                </div>
+                
+                <div class="clue-card" data-clue="6">
+                    <div class="clue-title">Техподдержка</div>
+                    <p>Звонок от "техподдержки" с просьбой предоставить доступ к компьютеру</p>
+                </div>
+            </div>
+            
+            <div class="dialog-container">
+                <h3 class="dialog-title">Диалог с подозреваемым</h3>
+                <div class="dialog-content">
+                    <p><strong>Подозреваемый:</strong> Здравствуйте, это служба безопасности вашего банка. Мы заметили подозрительную активность на вашем счете. Для защиты средств нам нужно подтвердить ваши данные.</p>
+                    <p><strong>Игрок:</strong> Как я могу убедиться, что вы действительно представляете банк?</p>
+                    <p><strong>Подозреваемый:</strong> Мы можем отправить вам код подтверждения, просто сообщите нам последние 4 цифры вашей карты и код из СМС.</p>
+                </div>
+                
+                <div class="response-options">
+                    <div class="response-option" data-option="1">Предоставить запрошенные данные для безопасности</div>
+                    <div class="response-option" data-option="2">Поблагодарить и положить трубку, затем позвонить в банк по официальному номеру</div>
+                    <div class="response-option" data-option="3">Спросить больше информации о "подозрительной активности"</div>
+                </div>
+            </div>
+            
+            <div class="game-controls">
+                <div class="score-display">
+                    <span>Очки:</span>
+                    <span class="score-value">0</span>
+                </div>
+                <button class="btn" id="check-answers">Проверить ответы</button>
+            </div>
+        </main>
+        
+        <aside class="hints-panel">
+            <h2 class="hints-title">Подсказки</h2>
+            
+            <div class="hint-item">
+                <div class="hint-header">
+                    <span>Как распознать фишинг</span>
+                    <span class="hint-icon"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="hint-content">
+                    <p>Фишинговые сообщения часто содержат:</p>
+                    <ul>
+                        <li>Срочные требования действий</li>
+                        <li>Ошибки в тексте</li>
+                        <li>Неофициальные адреса отправителей</li>
+                        <li>Ссылки на подозрительные сайты</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="hint-item">
+                <div class="hint-header">
+                    <span>Проверка подлинности контактов</span>
+                    <span class="hint-icon"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="hint-content">
+                    <p>Всегда проверяйте:</p>
+                    <ul>
+                        <li>Официальные номера телефонов на сайте организации</li>
+                        <li>Доменные имена в электронных адресах</li>
+                        <li>Сертификаты безопасности сайтов (HTTPS)</li>
+                        <li>Официальные приложения в магазинах приложений</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="hint-item">
+                <div class="hint-header">
+                    <span>Действия при подозрении</span>
+                    <span class="hint-icon"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="hint-content">
+                    <p>Если вы подозреваете мошенничество:</p>
+                    <ul>
+                        <li>Не предоставляйте личную информацию</li>
+                        <li>Не переходите по подозрительным ссылкам</li>
+                        <li>Свяжитесь с организацией через официальные каналы</li>
+                        <li>Сообщите о попытке мошенничества в соответствующие органы</li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script type="module">
+    import { auth, db, doc, getDoc, updateDoc, arrayUnion, increment, onAuthStateChanged } from './js/firebase.js';
+
+    // Проверка авторизации
+    onAuthStateChanged(auth, (user) => {
+        if (!user) {
+            alert('Войдите в аккаунт!');
+            window.location.href = 'login.html';
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // === ИГРОВАЯ ЛОГИКА ===
+        let score = 0;
+        let selectedClues = [];
+        let selectedResponse = null;
+        const correctClues = [1, 2];
+        const correctResponse = 2;
+
+        const scoreDisplay = document.querySelector('.score-value');
+        const checkButton = document.getElementById('check-answers');
+        const clueCards = document.querySelectorAll('.clue-card');
+        const responseOptions = document.querySelectorAll('.response-option');
+        const hintIndicator = document.querySelector('.hint-indicator');
+        const hintPopup = document.querySelector('.hint-popup');
+
+        // Подсказка
+        hintIndicator.addEventListener('click', (e) => {
+            e.stopPropagation();
+            hintPopup.classList.toggle('show');
+        });
+        document.addEventListener('click', (e) => {
+            if (!hintIndicator.contains(e.target) && !hintPopup.contains(e.target)) {
+                hintPopup.classList.remove('show');
+            }
+        });
+
+        // Аккордеон подсказок
+        document.querySelectorAll('.hint-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const item = this.parentElement;
+                const content = this.nextElementSibling;
+                const isActive = item.classList.contains('active');
+
+                document.querySelectorAll('.hint-item').forEach(i => {
+                    i.classList.remove('active');
+                    i.querySelector('.hint-content').classList.remove('active');
+                });
+
+                if (!isActive) {
+                    item.classList.add('active');
+                    content.classList.add('active');
+                }
+            });
+        });
+
+        // Выбор улик
+        clueCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const id = parseInt(this.dataset.clue);
+                if (this.classList.contains('selected')) {
+                    this.classList.remove('selected');
+                    selectedClues = selectedClues.filter(x => x !== id);
+                } else {
+                    this.classList.add('selected');
+                    selectedClues.push(id);
+                }
+            });
+        });
+
+        // Выбор ответа
+        responseOptions.forEach(opt => {
+            opt.addEventListener('click', function() {
+                responseOptions.forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedResponse = parseInt(this.dataset.option);
+            });
+        });
+
+        // Проверка
+        checkButton.addEventListener('click', async () => {
+            let cluesCorrect = true;
+
+            // Сброс стилей
+            clueCards.forEach(card => card.classList.remove('correct', 'incorrect'));
+            responseOptions.forEach(opt => opt.classList.remove('correct', 'incorrect', 'selected'));
+
+            // Проверка улик
+            clueCards.forEach(card => {
+                const id = parseInt(card.dataset.clue);
+                const shouldBeSelected = correctClues.includes(id);
+                const isSelected = selectedClues.includes(id);
+
+                if (shouldBeSelected !== isSelected) cluesCorrect = false;
+                card.classList.add(shouldBeSelected && isSelected ? 'correct' : 'incorrect');
+            });
+
+            // Проверка ответа
+            const responseCorrect = selectedResponse === correctResponse;
+            if (selectedResponse) {
+                responseOptions[selectedResponse - 1].classList.add(responseCorrect ? 'correct' : 'incorrect');
+            }
+            responseOptions[correctResponse - 1].classList.add('correct');
+
+            // Начисление очков
+            if (cluesCorrect) score += 30;
+            if (responseCorrect) score += 20;
+            scoreDisplay.textContent = score;
+
+            checkButton.disabled = true;
+            showResult(cluesCorrect, responseCorrect);
+        });
+
+        // Результат
+        function showResult(cluesCorrect, responseCorrect) {
+            const overlay = document.createElement('div');
+            overlay.className = 'overlay';
+            const message = document.createElement('div');
+            message.className = 'game-message';
+
+            let title, text;
+            if (cluesCorrect && responseCorrect) {
+                title = "Отлично!";
+                text = "Вы успешно выявили все признаки мошенничества и правильно отреагировали!";
+            } else if (cluesCorrect) {
+                title = "Хорошо, но можно лучше";
+                text = "Вы нашли все улики, но реакция на звонок была неверной.";
+            } else if (responseCorrect) {
+                title = "Неплохо";
+                text = "Вы правильно отреагировали, но пропустили улики.";
+            } else {
+                title = "Нужно учиться";
+                text = "Изучите подсказки и попробуйте снова!";
+            }
+
+            message.innerHTML = `
+                <h2>${title}</h2>
+                <p>${text}</p>
+                <p>Ваш счёт: <strong>${score}</strong> очков</p>
+                <button class="btn" id="complete-btn">Завершить уровень</button>
+            `;
+
+            document.body.append(overlay, message);
+
+            document.getElementById('complete-btn').onclick = async () => {
+                overlay.remove();
+                message.remove();
+                await completeLevel(cluesCorrect && responseCorrect);
+            };
+        }
+
+        // === ПРОХОЖДЕНИЕ УРОВНЯ ===
+        async function completeLevel(isPerfect) {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const levelId = "moshenichestvo_level1";
+            const topic = "moshenichestvo";
+            const xp = isPerfect ? 100 : 0;
+
+            const userRef = doc(db, "users", user.uid);
+            const snap = await getDoc(userRef);
+            const data = snap.data() || {};
+
+            if (!data.completedLevels?.includes(levelId)) {
+                await updateDoc(userRef, {
+                    completedLevels: arrayUnion(levelId),
+                    xp: increment(xp)
+                });
+                 alert(`+${xp} XP! Уровень пройден.`);
+                } else {
+                    alert("Уровень уже пройден. XP не начисляется.");
+                }
+
+            window.location.href = `themes.html`;
+        }
+    });
+</script>
+</body>
+</html>

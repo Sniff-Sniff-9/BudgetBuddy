@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Распредели бюджет правильно</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles/nakopleniya_level1.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>Распредели бюджет правильно</h1>
+            <p>Оптимизируй расходы и достигни цели!</p>
+            <div class="level-indicator">Уровень 1</div>
+            <div class="hint-indicator">
+                <i class="fas fa-lightbulb"></i> Подсказка
+            </div>
+            <div class="hint-popup">
+                <strong>Как играть:</strong><br>
+                Распределите 20,000 рублей между категориями так, чтобы накопить не менее 8,000 рублей. Используйте кнопки "+" и "-" для регулирования сумм.
+            </div>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stat-card">
+                <i class="fas fa-wallet"></i>
+                <div class="stat-value">50,000 ₽</div>
+                <div class="stat-label">Месячный доход</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-file-invoice"></i>
+                <div class="stat-value">30,000 ₽</div>
+                <div class="stat-label">Обязательные расходы</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-coins"></i>
+                <div class="stat-value">20,000 ₽</div>
+                <div class="stat-label">Доступно для распределения</div>
+            </div>
+        </div>
+        
+        <div class="goal-container">
+            <div class="goal-header">
+                <div class="goal-title">Цель уровня:</div>
+                <div class="goal-amount">8,000 ₽</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+        
+        <div class="budget-section">
+            <div class="section-title">
+                <i class="fas fa-chart-pie"></i>
+                Распределите оставшиеся средства
+            </div>
+            <div class="budget-cards">
+                <div class="budget-card">
+                    <div class="budget-header">
+                        <div class="budget-name">Еда</div>
+                        <div class="budget-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                    </div>
+                    <div class="budget-amount" id="foodAmount">6,000 ₽</div>
+                    <div class="budget-controls">
+                        <button class="budget-btn minus-btn" id="foodMinus">-</button>
+                        <input type="text" class="budget-input" id="foodInput" value="6000" readonly>
+                        <button class="budget-btn plus-btn" id="foodPlus">+</button>
+                    </div>
+                </div>
+                
+                <div class="budget-card">
+                    <div class="budget-header">
+                        <div class="budget-name">Развлечения</div>
+                        <div class="budget-icon">
+                            <i class="fas fa-gamepad"></i>
+                        </div>
+                    </div>
+                    <div class="budget-amount" id="funAmount">5,000 ₽</div>
+                    <div class="budget-controls">
+                        <button class="budget-btn minus-btn" id="funMinus">-</button>
+                        <input type="text" class="budget-input" id="funInput" value="5000">
+                        <button class="budget-btn plus-btn" id="funPlus">+</button>
+                    </div>
+                </div>
+                
+                <div class="budget-card">
+                    <div class="budget-header">
+                        <div class="budget-name">Одежда</div>
+                        <div class="budget-icon">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                    </div>
+                    <div class="budget-amount" id="clothesAmount">3,000 ₽</div>
+                    <div class="budget-controls">
+                        <button class="budget-btn minus-btn" id="clothesMinus">-</button>
+                        <input type="text" class="budget-input" id="clothesInput" value="3000">
+                        <button class="budget-btn plus-btn" id="clothesPlus">+</button>
+                    </div>
+                </div>
+                
+                <div class="budget-card">
+                    <div class="budget-header">
+                        <div class="budget-name">Накопления</div>
+                        <div class="budget-icon">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                    </div>
+                    <div class="budget-amount" id="savingsAmount">6,000 ₽</div>
+                    <div class="budget-controls">
+                        <button class="budget-btn minus-btn" id="savingsMinus">-</button>
+                        <input type="text" class="budget-input" id="savingsInput" value="6000">
+                        <button class="budget-btn plus-btn" id="savingsPlus">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="remaining-section">
+            <div class="remaining-label">Осталось распределить:</div>
+            <div class="remaining-amount" id="remainingAmount">0 ₽</div>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="action-btn reset-btn" id="resetBtn">Сбросить</button>
+            <button class="action-btn submit-btn" id="submitBtn">Проверить решение</button>
+        </div>
+    </div>
+    <script type="module" src="./js/Nakoplenialvl1JS.js"></script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!-- public/pages/profile.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Профиль</title>
+  <link rel="stylesheet" href="./styles/profile_style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <h1>Профиль</h1>
+
+  <div class="profile-container">
+    <div class="avatar">
+    </div>
+    <h2 class="profile-name" id="name">Загрузка...</h2>
+    <p class="profile-username" id="username">Загрузка...</p>
+  </div>
+
+  <div class="level-section">
+    <div class="level-card">
+      <p>Ваш уровень</p>
+      <h3 id="level">1</h3>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width: 40%;"></div>
+      </div>
+      <p id="xp-text" style="font-size: 0.75rem; margin-top: 0.25rem;">0 xp / 500 xp</p>
+    </div>
+
+    <button class="btn-play" onclick="window.location.href='themes.html'">
+      <p class="btn-play-text">Играть</p>
+      <div class="btn-circle">
+        <img src="./images/Кнопка2.png" alt="Играть" class="btn-icon">
+      </div>
+    </button>
+  </div>
+
+  <!-- Заглушка для достижений -->
+  <div class="card gradient-purple">
+    <p>Достижения</p>
+    <div class="achievement-icons">
+      <div class="achievement-icon"></div>
+      <div class="achievement-icon"></div>
+      <div class="achievement-icon"></div>
+    </div>
+  </div>
+
+  <div class="difficulty-section gradient-purple">
+    <p>Прохождение по сложности</p>
+    <canvas id="levelsChart" width="400" height="200"></canvas>
+    <div class="difficulty-inner">
+      <div class="difficulty-item">
+        <div class="difficulty-dot easy"></div>
+        <p>легко</p>
+      </div>
+      <div class="difficulty-item">
+        <div class="difficulty-dot medium"></div>
+        <p>средне</p>
+      </div>
+      <div class="difficulty-item">
+        <div class="difficulty-dot hard"></div>
+        <p>сложно</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { auth, db, onAuthStateChanged, doc, getDoc } from './js/firebase.js';
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const userRef = doc(db, "users", user.uid);
+      const snap = await getDoc(userRef);
+      if (snap.exists()) {
+        const data = snap.data();
+
+        document.getElementById('name').textContent = data.name || 'Сидорин Кирилл';
+        document.getElementById('username').textContent = data.username || 'sidorinkirill';
+        document.getElementById('level').textContent = data.level || 1;
+
+        const xp = data.xp || 0;
+        const nextXP = 500;
+        document.getElementById('xp-text').textContent = `${xp} xp / ${nextXP} xp`;
+        document.getElementById('progress-fill').style.width = `${(xp / nextXP) * 100}%`;
+
+        const completedIds = data.completedLevels || [];
+        const stats = { easy: 0, medium: 0, hard: 0 };
+
+        // если есть пройденные уровни, подгружаем их из коллекции levels
+        if (completedIds.length > 0) {
+          const levelDocs = await Promise.all(
+            completedIds.map(id => getDoc(doc(db, "levels", id)))
+          );
+
+          levelDocs.forEach(docSnap => {
+            if (docSnap.exists()) {
+              const levelData = docSnap.data();
+              if (levelData.difficulty === "easy") stats.easy++;
+              else if (levelData.difficulty === "medium") stats.medium++;
+              else if (levelData.difficulty === "hard") stats.hard++;
+            }
+          });
+        }
+
+        console.log("Stats:", stats);
+
+        setTimeout(() => {
+          const ctx = document.getElementById('levelsChart');
+          if (!ctx) return;
+
+          new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+              datasets: [{
+                data: [stats.easy, stats.medium, stats.hard],
+                backgroundColor: ['#B280F0', '#7A45BC', '#62329E'],
+                borderWidth: 0
+              }]
+            },
+            options: {
+              rotation: -90,
+              circumference: 180,
+              cutout: '70%',
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false },
+                tooltip: { enabled: true }
+              },
+              animation: {
+                animateRotate: true,
+                duration: 1500
+              }
+            }
+          });
+        }, 200);
+      } else {
+        alert('Профиль не найден. Пожалуйста, зарегистрируйтесь заново.');
+      }
+    });
+  </script>
+</body>
+</html>
