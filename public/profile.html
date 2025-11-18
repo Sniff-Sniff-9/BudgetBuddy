@@ -1,4 +1,3 @@
-<!-- public/pages/profile.html -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -37,7 +36,6 @@
     </button>
   </div>
 
-  <!-- Заглушка для достижений -->
   <div class="card gradient-purple">
     <p>Достижения</p>
     <div class="achievement-icons">
@@ -50,6 +48,12 @@
   <div class="difficulty-section gradient-purple">
     <p>Прохождение по сложности</p>
     <canvas id="levelsChart" width="400" height="200"></canvas>
+    <div id="noLevelsMessage" class="no-levels-message">
+      <p>Пока нет пройденных уровней</p>
+      <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.5rem;">
+        Начни играть, чтобы увидеть статистику!
+      </p>
+    </div>
     <div class="difficulty-inner">
       <div class="difficulty-item">
         <div class="difficulty-dot easy"></div>
@@ -67,83 +71,109 @@
   </div>
 
   <script type="module">
-    import { auth, db, onAuthStateChanged, doc, getDoc } from './js/firebase.js';
+  import { auth, db, onAuthStateChanged, doc, getDoc } from './js/firebase.js';
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = 'login.html';
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    try {
+      const userRef = doc(db, "users", user.uid);
+      const snap = await getDoc(userRef);
+
+      if (!snap.exists()) {
+        alert('Профиль не найден. Пожалуйста, зарегистрируйтесь заново.');
         return;
       }
 
-      const userRef = doc(db, "users", user.uid);
-      const snap = await getDoc(userRef);
-      if (snap.exists()) {
-        const data = snap.data();
+      const data = snap.data();
 
-        document.getElementById('name').textContent = data.name || 'Сидорин Кирилл';
-        document.getElementById('username').textContent = data.username || 'sidorinkirill';
-        document.getElementById('level').textContent = data.level || 1;
+      document.getElementById('name').textContent = data.name || 'Нет имени';
+      document.getElementById('username').textContent = data.username ? `@${data.username}` : '@пользователь';
+      document.getElementById('level').textContent = data.level || 1;
 
-        const xp = data.xp || 0;
-        const nextXP = 500;
-        document.getElementById('xp-text').textContent = `${xp} xp / ${nextXP} xp`;
-        document.getElementById('progress-fill').style.width = `${(xp / nextXP) * 100}%`;
+      const xp = data.xp || 0;
+      const nextXP = 500; 
+      document.getElementById('xp-text').textContent = `${xp} xp / ${nextXP} xp`;
+      document.getElementById('progress-fill').style.width = `${Math.min(100, (xp / nextXP) * 100)}%`;
 
-        const completedIds = data.completedLevels || [];
-        const stats = { easy: 0, medium: 0, hard: 0 };
+      const completedIds = data.completedLevels || [];
+      const stats = { easy: 0, medium: 0, hard: 0 };
 
-        // если есть пройденные уровни, подгружаем их из коллекции levels
-        if (completedIds.length > 0) {
-          const levelDocs = await Promise.all(
-            completedIds.map(id => getDoc(doc(db, "levels", id)))
-          );
+      if (completedIds.length > 0) {
+        const levelPromises = completedIds.map(id => getDoc(doc(db, "levels", id)));
+        const levelSnaps = await Promise.all(levelPromises);
 
-          levelDocs.forEach(docSnap => {
-            if (docSnap.exists()) {
-              const levelData = docSnap.data();
-              if (levelData.difficulty === "easy") stats.easy++;
-              else if (levelData.difficulty === "medium") stats.medium++;
-              else if (levelData.difficulty === "hard") stats.hard++;
-            }
-          });
+        levelSnaps.forEach(snap => {
+          if (snap.exists()) {
+            const difficulty = snap.data().difficulty;
+            if (difficulty === "easy") stats.easy++;
+            else if (difficulty === "medium") stats.medium++;
+            else if (difficulty === "hard") stats.hard++;
+          }
+        });
+      }
+
+      const canvas = document.getElementById('levelsChart');
+      const noLevelsMsg = document.getElementById('noLevelsMessage');
+      const legend = document.querySelector('.difficulty-inner'); 
+      if (completedIds.length === 0) {
+        canvas.style.display = 'none';
+        legend.style.display = 'none';
+        noLevelsMsg.classList.add('active');
+
+        if (window.levelsChartInstance) {
+          window.levelsChartInstance.destroy();
+        }
+      } else {
+        canvas.style.display = 'block';
+        legend.style.display = 'flex';
+        noLevelsMsg.classList.remove('active');
+
+        if (window.levelsChartInstance) {
+          window.levelsChartInstance.destroy();
         }
 
-        console.log("Stats:", stats);
+        const safeData = [
+          stats.easy ,
+          stats.medium ,
+          stats.hard 
+        ];
 
-        setTimeout(() => {
-          const ctx = document.getElementById('levelsChart');
-          if (!ctx) return;
-
-          new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-              datasets: [{
-                data: [stats.easy, stats.medium, stats.hard],
-                backgroundColor: ['#B280F0', '#7A45BC', '#62329E'],
-                borderWidth: 0
-              }]
+        window.levelsChartInstance = new Chart(canvas, {
+          type: 'doughnut',
+          data: {
+            datasets: [{
+              data: safeData,
+              backgroundColor: ['#B280F0', '#7A45BC', '#62329E'],
+              borderWidth: 0
+            }]
+          },
+          options: {
+            rotation: -90,
+            circumference: 180,
+            cutout: '70%',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: { enabled: true }
             },
-            options: {
-              rotation: -90,
-              circumference: 180,
-              cutout: '70%',
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: { display: false },
-                tooltip: { enabled: true }
-              },
-              animation: {
-                animateRotate: true,
-                duration: 1500
-              }
+            animation: {
+              animateRotate: true,
+              duration: 1500
             }
-          });
-        }, 200);
-      } else {
-        alert('Профиль не найден. Пожалуйста, зарегистрируйтесь заново.');
+          }
+        });
       }
-    });
-  </script>
+
+    } catch (error) {
+      console.error("Ошибка загрузки профиля:", error);
+      alert("Не удалось загрузить данные. Проверьте интернет.");
+    }
+  });
+</script>
 </body>
 </html>
