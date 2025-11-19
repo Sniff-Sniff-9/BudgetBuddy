@@ -1,6 +1,8 @@
 // nakopleniya_level1.js — ПОЛНЫЙ РАБОЧИЙ КОД
 
 import { auth, db, doc, getDoc, updateDoc, arrayUnion, increment, onAuthStateChanged } from './firebase.js';
+import { addXP } from './level_up_modal.js';
+
 
 // === ПРОВЕРКА АВТОРИЗАЦИИ ===
 onAuthStateChanged(auth, (user) => {
@@ -171,17 +173,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const data = snap.data() || {};
 
     if (!data.completedLevels?.includes(levelId)) {
+      await addXP(xp);
       await updateDoc(userRef, {
-        completedLevels: arrayUnion(levelId),
-        xp: increment(xp)
-      });
+              completedLevels: arrayUnion(levelId)
+          })
       alert(`+${xp} XP! Уровень пройден.`);
     } else {
       alert("Уровень уже пройден. XP не начисляется.");
     }
 
     // ВОЗВРАТ В СПИСОК
-    window.location.href = `themes.html`;
+    window.location.href = `levels.html?topic=nakopleniya`;
   }
 
   // === СТАРТ ===

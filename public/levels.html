@@ -12,9 +12,28 @@
   <h1 id="topic-title">Загрузка...</h1>
   <div id="levels-container"></div>
 
+  <!-- Модальное окно повышения уровня -->
+  <div id="levelUpModal" class="level-up-modal">
+    <div class="level-up-content">
+      <div class="level-up-circle">
+        <span id="newLevel">0</span>
+      </div>
+      <h2>Поздравляем!</h2>
+      <p>Вы достигли <strong><span id="newLevelText">0 уровня</span></strong></p>
+      <div class="sparkles">
+        <span>★</span><span>★</span><span>★</span><span>★</span>
+      </div>
+      <button class="level-up-btn" onclick="closeLevelUpModal()">Продолжить</button>
+    </div>
+  </div>
+
+
   <script type="module">
     import { auth, db, onAuthStateChanged, doc, getDoc, getDocs, collection, query, where, updateDoc, arrayUnion, increment } from './js/firebase.js';
-
+    import { initLevelUpChecker } from './js/level_up_modal.js';
+    
+    // Запускаем проверку при загрузке страницы
+    initLevelUpChecker();
     const urlParams = new URLSearchParams(window.location.search);
     const topic = urlParams.get('topic');
     if (!topic) {

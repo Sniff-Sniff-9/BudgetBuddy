@@ -584,183 +584,176 @@
         </aside>
     </div>
 
-    <script type="module">
-    import { auth, db, doc, getDoc, updateDoc, arrayUnion, increment, onAuthStateChanged } from './js/firebase.js';
+<script type="module">
+import { auth, db, doc, getDoc, updateDoc, arrayUnion, onAuthStateChanged } from './js/firebase.js';
+import { addXP } from './js/level_up_modal.js';  // ← Вот и всё! Только это добавили
 
-    // Проверка авторизации
-    onAuthStateChanged(auth, (user) => {
-        if (!user) {
-            alert('Войдите в аккаунт!');
-            window.location.href = 'login.html';
+// Проверка авторизации
+onAuthStateChanged(auth, (user) => {
+    if (!user) {
+        alert('Войдите в аккаунт!');
+        window.location.href = 'login.html';
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    let score = 0;
+    let selectedClues = [];
+    let selectedResponse = null;
+    const correctClues = [1, 2];
+    const correctResponse = 2;
+
+    const scoreDisplay = document.querySelector('.score-value');
+    const checkButton = document.getElementById('check-answers');
+    const clueCards = document.querySelectorAll('.clue-card');
+    const responseOptions = document.querySelectorAll('.response-option');
+    const hintIndicator = document.querySelector('.hint-indicator');
+    const hintPopup = document.querySelector('.hint-popup');
+
+    // === ВСЯ ИГРОВАЯ ЛОГИКА (осталась без изменений) ===
+    // Подсказка, аккордеон, выбор улик, выбор ответа — оставляем как у тебя
+    hintIndicator.addEventListener('click', (e) => {
+        e.stopPropagation();
+        hintPopup.classList.toggle('show');
+    });
+    document.addEventListener('click', (e) => {
+        if (!hintIndicator.contains(e.target) && !hintPopup.contains(e.target)) {
+            hintPopup.classList.remove('show');
         }
     });
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // === ИГРОВАЯ ЛОГИКА ===
-        let score = 0;
-        let selectedClues = [];
-        let selectedResponse = null;
-        const correctClues = [1, 2];
-        const correctResponse = 2;
-
-        const scoreDisplay = document.querySelector('.score-value');
-        const checkButton = document.getElementById('check-answers');
-        const clueCards = document.querySelectorAll('.clue-card');
-        const responseOptions = document.querySelectorAll('.response-option');
-        const hintIndicator = document.querySelector('.hint-indicator');
-        const hintPopup = document.querySelector('.hint-popup');
-
-        // Подсказка
-        hintIndicator.addEventListener('click', (e) => {
-            e.stopPropagation();
-            hintPopup.classList.toggle('show');
-        });
-        document.addEventListener('click', (e) => {
-            if (!hintIndicator.contains(e.target) && !hintPopup.contains(e.target)) {
-                hintPopup.classList.remove('show');
+    document.querySelectorAll('.hint-header').forEach(header => {
+        header.addEventListener('click', function() {
+            const item = this.parentElement;
+            const content = this.nextElementSibling;
+            const isActive = item.classList.contains('active');
+            document.querySelectorAll('.hint-item').forEach(i => {
+                i.classList.remove('active');
+                i.querySelector('.hint-content').classList.remove('active');
+            });
+            if (!isActive) {
+                item.classList.add('active');
+                content.classList.add('active');
             }
         });
+    });
 
-        // Аккордеон подсказок
-        document.querySelectorAll('.hint-header').forEach(header => {
-            header.addEventListener('click', function() {
-                const item = this.parentElement;
-                const content = this.nextElementSibling;
-                const isActive = item.classList.contains('active');
-
-                document.querySelectorAll('.hint-item').forEach(i => {
-                    i.classList.remove('active');
-                    i.querySelector('.hint-content').classList.remove('active');
-                });
-
-                if (!isActive) {
-                    item.classList.add('active');
-                    content.classList.add('active');
-                }
-            });
-        });
-
-        // Выбор улик
-        clueCards.forEach(card => {
-            card.addEventListener('click', function() {
-                const id = parseInt(this.dataset.clue);
-                if (this.classList.contains('selected')) {
-                    this.classList.remove('selected');
-                    selectedClues = selectedClues.filter(x => x !== id);
-                } else {
-                    this.classList.add('selected');
-                    selectedClues.push(id);
-                }
-            });
-        });
-
-        // Выбор ответа
-        responseOptions.forEach(opt => {
-            opt.addEventListener('click', function() {
-                responseOptions.forEach(o => o.classList.remove('selected'));
-                this.classList.add('selected');
-                selectedResponse = parseInt(this.dataset.option);
-            });
-        });
-
-        // Проверка
-        checkButton.addEventListener('click', async () => {
-            let cluesCorrect = true;
-
-            // Сброс стилей
-            clueCards.forEach(card => card.classList.remove('correct', 'incorrect'));
-            responseOptions.forEach(opt => opt.classList.remove('correct', 'incorrect', 'selected'));
-
-            // Проверка улик
-            clueCards.forEach(card => {
-                const id = parseInt(card.dataset.clue);
-                const shouldBeSelected = correctClues.includes(id);
-                const isSelected = selectedClues.includes(id);
-
-                if (shouldBeSelected !== isSelected) cluesCorrect = false;
-                card.classList.add(shouldBeSelected && isSelected ? 'correct' : 'incorrect');
-            });
-
-            // Проверка ответа
-            const responseCorrect = selectedResponse === correctResponse;
-            if (selectedResponse) {
-                responseOptions[selectedResponse - 1].classList.add(responseCorrect ? 'correct' : 'incorrect');
-            }
-            responseOptions[correctResponse - 1].classList.add('correct');
-
-            // Начисление очков
-            if (cluesCorrect) score += 30;
-            if (responseCorrect) score += 20;
-            scoreDisplay.textContent = score;
-
-            checkButton.disabled = true;
-            showResult(cluesCorrect, responseCorrect);
-        });
-
-        // Результат
-        function showResult(cluesCorrect, responseCorrect) {
-            const overlay = document.createElement('div');
-            overlay.className = 'overlay';
-            const message = document.createElement('div');
-            message.className = 'game-message';
-
-            let title, text;
-            if (cluesCorrect && responseCorrect) {
-                title = "Отлично!";
-                text = "Вы успешно выявили все признаки мошенничества и правильно отреагировали!";
-            } else if (cluesCorrect) {
-                title = "Хорошо, но можно лучше";
-                text = "Вы нашли все улики, но реакция на звонок была неверной.";
-            } else if (responseCorrect) {
-                title = "Неплохо";
-                text = "Вы правильно отреагировали, но пропустили улики.";
+    clueCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const id = parseInt(this.dataset.clue);
+            if (this.classList.contains('selected')) {
+                this.classList.remove('selected');
+                selectedClues = selectedClues.filter(x => x !== id);
             } else {
-                title = "Нужно учиться";
-                text = "Изучите подсказки и попробуйте снова!";
+                this.classList.add('selected');
+                selectedClues.push(id);
             }
-
-            message.innerHTML = `
-                <h2>${title}</h2>
-                <p>${text}</p>
-                <p>Ваш счёт: <strong>${score}</strong> очков</p>
-                <button class="btn" id="complete-btn">Завершить уровень</button>
-            `;
-
-            document.body.append(overlay, message);
-
-            document.getElementById('complete-btn').onclick = async () => {
-                overlay.remove();
-                message.remove();
-                await completeLevel(cluesCorrect && responseCorrect);
-            };
-        }
-
-        // === ПРОХОЖДЕНИЕ УРОВНЯ ===
-        async function completeLevel(isPerfect) {
-            const user = auth.currentUser;
-            if (!user) return;
-
-            const levelId = "moshenichestvo_level1";
-            const topic = "moshenichestvo";
-            const xp = isPerfect ? 100 : 0;
-
-            const userRef = doc(db, "users", user.uid);
-            const snap = await getDoc(userRef);
-            const data = snap.data() || {};
-
-            if (!data.completedLevels?.includes(levelId)) {
-                await updateDoc(userRef, {
-                    completedLevels: arrayUnion(levelId),
-                    xp: increment(xp)
-                });
-                 alert(`+${xp} XP! Уровень пройден.`);
-                } else {
-                    alert("Уровень уже пройден. XP не начисляется.");
-                }
-
-            window.location.href = `themes.html`;
-        }
+        });
     });
+
+    responseOptions.forEach(opt => {
+        opt.addEventListener('click', function() {
+            responseOptions.forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedResponse = parseInt(this.dataset.option);
+        });
+    });
+
+    checkButton.addEventListener('click', async () => {
+        let cluesCorrect = true;
+
+        clueCards.forEach(card => card.classList.remove('correct', 'incorrect'));
+        responseOptions.forEach(opt => opt.classList.remove('correct', 'incorrect', 'selected'));
+
+        clueCards.forEach(card => {
+            const id = parseInt(card.dataset.clue);
+            const shouldBeSelected = correctClues.includes(id);
+            const isSelected = selectedClues.includes(id);
+            if (shouldBeSelected !== isSelected) cluesCorrect = false;
+            card.classList.add(shouldBeSelected && isSelected ? 'correct' : 'incorrect');
+        });
+
+        const responseCorrect = selectedResponse === correctResponse;
+        if (selectedResponse) {
+            responseOptions[selectedResponse - 1].classList.add(responseCorrect ? 'correct' : 'incorrect');
+        }
+        responseOptions[correctResponse - 1].classList.add('correct');
+
+        if (cluesCorrect) score += 30;
+        if (responseCorrect) score += 20;
+        scoreDisplay.textContent = score;
+
+        checkButton.disabled = true;
+        showResult(cluesCorrect, responseCorrect);
+    });
+
+    function showResult(cluesCorrect, responseCorrect) {
+        const overlay = document.createElement('div');
+        overlay.className = 'overlay';
+        const message = document.createElement('div');
+        message.className = 'game-message';
+
+        let title, text;
+        if (cluesCorrect && responseCorrect) {
+            title = "Отлично!";
+            text = "Вы успешно выявили все признаки мошенничества и правильно отреагировали!";
+        } else if (cluesCorrect) {
+            title = "Хорошо, но можно лучше";
+            text = "Вы нашли все улики, но реакция на звонок была неверной.";
+        } else if (responseCorrect) {
+            title = "Неплохо";
+            text = "Вы правильно отреагировали, но пропустили улики.";
+        } else {
+            title = "Нужно учиться";
+            text = "Изучите подсказки и попробуйте снова!";
+        }
+
+        message.innerHTML = `
+            <h2>${title}</h2>
+            <p>${text}</p>
+            <p>Ваш счёт: <strong>${score}</strong> очков</p>
+            <button class="btn" id="complete-btn">Завершить уровень</button>
+        `;
+
+        document.body.append(overlay, message);
+
+        document.getElementById('complete-btn').onclick = async () => {
+            overlay.remove();
+            message.remove();
+            await completeLevel(cluesCorrect && responseCorrect);
+        };
+    }
+
+    // === ГЛАВНОЕ: ПРОХОЖДЕНИЕ УРОВНЯ ===
+    async function completeLevel(isPerfect) {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const levelId = "moshenichestvo_level1";
+
+        const userRef = doc(db, "users", user.uid);
+        const snap = await getDoc(userRef);
+        const data = snap.data() || {};
+
+        // Если уровень ещё не пройден — начисляем XP и отмечаем
+        if (!data.completedLevels?.includes(levelId)) {
+            const xpToAdd = isPerfect ? 200 : 100;  // 200 за идеал, 100 за просто проход
+            alert(`+${xpToAdd} XP! Уровень пройден.`);
+            await addXP(xpToAdd);  // ← Используем твою функцию!
+
+            await updateDoc(userRef, {
+                completedLevels: arrayUnion(levelId)
+            });
+
+        }
+        else{
+            alert("Уровень уже пройден. XP не начисляется.");
+        }
+
+        // Переходим на список уровней — там и появится модалка!
+        window.location.href = 'levels.html?topic=moshenichestvo';
+    }
+});
 </script>
 </body>
 </html>
