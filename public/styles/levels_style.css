@@ -254,3 +254,86 @@ h1 {
         font-size: 13px;
     }
 }
+
+/* Шапка — идеально выровнена с карточками */
+.page-header {
+  width: 100%;
+  max-width: 528px;           /* ← ТОЧНО ТАКАЯ ЖЕ ШИРИНА, как у .card */
+  margin: 20px auto 16px;
+  padding: 0 20px;            /* ← как у body */
+  display: grid;
+  grid-template-columns: 72px 1fr 72px;  /* лево | центр | право (пусто) */
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.page-header h1 {
+  grid-column: 2;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #7A45BC;
+  text-align: center;
+}
+
+/* Кнопка "Назад" — строго слева */
+.back-btn {
+  grid-column: 1;
+  justify-self: start;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  background: #fff;
+  box-shadow: 0 6px 16px rgba(122, 69, 188, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  padding: 0;
+}
+
+.back-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 10px 24px rgba(122, 69, 188, 0.28);
+}
+
+.back-btn:active {
+  transform: scale(0.96);
+}
+
+.back-icon {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  filter: brightness(0) saturate(100%) invert(38%) sepia(67%) saturate(7478%) hue-rotate(260deg) brightness(95%) contrast(101%);
+  transition: filter 0.25s ease;
+}
+
+.back-btn:hover .back-icon {
+  filter: brightness(0) saturate(100%) invert(25%) sepia(90%) saturate(6000%) hue-rotate(270deg) brightness(85%) contrast(110%);
+}
+
+/* Адаптив — на телефоне всё идеально */
+@media (max-width: 480px) {
+  .page-header {
+    margin: 16px auto 12px;
+    padding: 0 16px;
+    grid-template-columns: 64px 1fr 64px;  /* чуть меньше */
+  }
+
+  .page-header h1 {
+    font-size: 18px;
+  }
+
+  .back-btn {
+    width: 46px;
+    height: 46px;
+  }
+
+  .back-icon {
+    width: 23px;
+    height: 23px;
+  }
+}

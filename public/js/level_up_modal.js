@@ -20,6 +20,8 @@ export async function addXP(amount) {
   let level = data.level || 1;
   let xp = data.xp || 0; // остаток XP в текущем уровне
 
+  const previousLevel = level;
+
   xp += amount;
 
   // Поднимаем уровень, пока хватает XP
@@ -32,8 +34,7 @@ export async function addXP(amount) {
   await updateDoc(userRef, { level, xp });
 
   // Сохраняем в localStorage, чтобы потом показать модалку
-  const previousLevel = Number(localStorage.getItem('lastKnownLevel')) || 1;
-  if (level !== previousLevel) {
+  if (level > previousLevel) {
     localStorage.setItem('pendingLevelUp', level); // запоминаем, что надо показать
   }
 }
