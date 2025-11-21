@@ -28,6 +28,65 @@ h1 {
     text-align: center;
 }
 
+/* ========== ГЛАВНЫЙ КОНТЕЙНЕР — РЕШАЕТ ВСЕ ПРОБЛЕМЫ ========== */
+.main-container {
+  width: 100%;
+  max-width: 520px;              /* чуть уже твоих 528px — красивее на мобилках */
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Теперь карточки просто растягиваются на всю ширину контейнера */
+.card {
+  width: 100% !important;        /* перебиваем старое значение */
+  max-width: none !important;    /* убираем ограничение */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Шапка теперь идеально выравнивается с карточками */
+.page-header {
+  width: 100%;
+  max-width: none;               /* убираем старое ограничение */
+  margin: 16px 0 20px 0 !important;
+  padding: 0 !important;
+  display: grid;
+  grid-template-columns: 64px 1fr 64px;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-header h1 {
+  grid-column: 2;
+  margin: 0;
+  text-align: center;
+  font-size: 20px;
+  color: #7A45BC;
+  font-weight: 700;
+}
+
+/* Пустое место справа — чтобы заголовок был строго по центру */
+.header-placeholder {
+  width: 64px;
+  height: 64px;
+}
+
+/* Список уровней — просто отступы между карточками */
+.levels-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;                     /* вместо margin-bottom у карточек */
+  padding-bottom: 30px;
+}
+
+/* Убираем старый margin у карточек */
+.card {
+  margin-bottom: 0 !important;
+}
+
 .card {
     width: 100%;
     max-width: 528px;
@@ -276,43 +335,43 @@ h1 {
   text-align: center;
 }
 
-/* Кнопка "Назад" — строго слева */
+/* НОВАЯ КНОПКА "НАЗАД" — ТОЧНО КАК В ПРОФИЛЕ */
 .back-btn {
-  grid-column: 1;
-  justify-self: start;
-  width: 52px;
-  height: 52px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(122, 69, 188, 0.2);
   border-radius: 50%;
-  border: none;
-  background: #fff;
-  box-shadow: 0 6px 16px rgba(122, 69, 188, 0.18);
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(122, 69, 188, 0.18);
   padding: 0;
+  z-index: 10;
 }
 
 .back-btn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
   transform: scale(1.08);
-  box-shadow: 0 10px 24px rgba(122, 69, 188, 0.28);
+  box-shadow: 0 8px 25px rgba(122, 69, 188, 0.35);
 }
 
-.back-btn:active {
-  transform: scale(0.96);
+/* Стрелка меняет цвет на белый при hover — как в профиле */
+.back-btn:hover .back-icon {
+  filter: brightness(0) invert(1); /* чисто белый */
 }
 
+/* Базовый цвет стрелки — фиолетовый */
 .back-icon {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
   filter: brightness(0) saturate(100%) invert(38%) sepia(67%) saturate(7478%) hue-rotate(260deg) brightness(95%) contrast(101%);
-  transition: filter 0.25s ease;
-}
-
-.back-btn:hover .back-icon {
-  filter: brightness(0) saturate(100%) invert(25%) sepia(90%) saturate(6000%) hue-rotate(270deg) brightness(85%) contrast(110%);
+  transition: filter 0.3s ease;
 }
 
 /* Адаптив — на телефоне всё идеально */
@@ -328,12 +387,11 @@ h1 {
   }
 
   .back-btn {
-    width: 46px;
-    height: 46px;
+    width: 40px;
+    height: 40px;
   }
-
   .back-icon {
-    width: 23px;
-    height: 23px;
+    width: 22px;
+    height: 22px;
   }
 }

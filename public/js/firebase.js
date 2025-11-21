@@ -1,6 +1,6 @@
 // public/js/firebase.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updatePassword } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import { 
   getFirestore, 
   doc, 
@@ -15,6 +15,13 @@ import {
   where            // ДОБАВИЛ
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
+import { 
+  getStorage, 
+  ref, 
+  uploadBytes, 
+  getDownloadURL 
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyB4yLjdgDOO7Ftpv9x__9Kripg7VL-vkKA",
   authDomain: "budgetbuddy-theateam5.firebaseapp.com",
@@ -28,6 +35,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 export { 
   auth, 
@@ -44,5 +52,10 @@ export {
   collection,   // ЭКСПОРТИРУЕМ!
   getDocs,      // ЭКСПОРТИРУЕМ!
   query,        // ЭКСПОРТИРУЕМ!
-  where         // ЭКСПОРТИРУЕМ!
+  where,
+  updatePassword,   
+  storage, 
+  ref, 
+  uploadBytes, 
+  getDownloadURL // ЭКСПОРТИРУЕМ!
 };

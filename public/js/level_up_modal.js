@@ -2,7 +2,7 @@ import { auth, db, doc, getDoc, updateDoc, onAuthStateChanged } from './firebase
 
 
 // Сколько XP нужно для перехода с level → level+1
-const getXpForNextLevel = (level) => {
+export const getXpForNextLevel = (level) => {
   if (level <= 1) return 250;
   return 250 + (level - 1) * 100; // 250, 350, 450, 550, 650...
 };

@@ -729,7 +729,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const user = auth.currentUser;
         if (!user) return;
 
-        const levelId = "moshenichestvo_level1";
+        const levelId = "moshenichestvo-level1";
 
         const userRef = doc(db, "users", user.uid);
         const snap = await getDoc(userRef);
