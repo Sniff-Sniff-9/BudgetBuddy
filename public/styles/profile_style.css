@@ -193,6 +193,77 @@ h1 {
   background-position: center;
 }
 
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: white;
+}
+
+/* Кнопка перехода к достижениям */
+/* Белая круглая кнопка со стрелкой */
+.achievements-btn {
+  width: 40px;
+  height: 40px;
+  background: white;
+  color: var(--accent);           /* твой фиолетовый цвет */
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.achievements-btn:hover {
+  transform: translateX(4px) scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.achievements-btn i {
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+
+/* На мобильных чуть меньше */
+@media (max-width: 480px) {
+  .achievements-btn {
+      width: 30px;
+      height: 30px;
+      margin-right: 0.5rem;
+  }
+  .achievements-btn i {
+    font-size: 1rem;
+  }
+}
+
+/* Опционально: заблокированное достижение */
+.achievement-icon.locked {
+  background-color: rgba(255, 255, 255, 0.15);
+  background-image: none;
+  position: relative;
+}
+
+.achievement-icon.locked::after {
+  content: "Lock";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
 .difficulty-section {
   border-radius: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
