@@ -1,0 +1,64 @@
+<!-- public/pages/register.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Регистрация</title>
+  <link rel="stylesheet" href="./styles/register_login_style.css">
+</head>
+<body>
+  <div class="form-card">
+    <h1>Регистрация</h1>
+    <form id="registerForm">
+      <input type="text" class="input-field" id="name" placeholder="Имя" required>
+      <input type="text" class="input-field" id="username" placeholder="Никнейм" required>
+      <input type="text" class="input-field" id="login" placeholder="Почта" required>
+      <input type="password" class="input-field" id="password" placeholder="Пароль" required>
+      <input type="password" class="input-field" id="confirmPassword" placeholder="Повторить пароль" required>
+      <button type="submit" class="btn">Зарегистрироваться</button>
+    </form>
+    <p id="registerError" style="color: red; margin-top: 10px;"></p>
+  </div>
+
+  <script type="module">
+    import { auth, db, createUserWithEmailAndPassword, doc, setDoc } from './js/firebase.js';
+
+    const form = document.getElementById('registerForm');
+    const error = document.getElementById('registerError');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const username = document.getElementById('username').value;
+      const login = document.getElementById('login').value;
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (password !== confirmPassword) {
+        error.textContent = 'Пароли не совпадают';
+        return;
+      }
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, login, password);
+        const user = userCredential.user;
+
+        await setDoc(doc(db, "users", user.uid), {
+          name: name,
+          username: username,
+          level: 1,
+          xp: 0,
+          completedLevels: [],
+          completedAchievements: [],
+          avatar: ""
+        });
+
+        window.location.href = 'profile.html';
+      } catch (err) {
+        error.textContent = 'Ошибка регистрации: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
