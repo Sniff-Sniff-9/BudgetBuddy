@@ -1,0 +1,148 @@
+:root{
+  --primary: #8c77d9;
+  --background: #F0F0F2;
+  --card-bg: #fff;
+  --accent: #8c77d9;
+  --text: #8c77d9;
+  --radius: 12px;
+  --shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+*{box-sizing:border-box;font-family:Montserrat, sans-serif}
+body{
+  background: linear-gradient(135deg, var(--background) 0%, #e8e8f0 100%);
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:20px;color:var(--text);
+}
+.game-container{
+  width:100%;max-width:900px;background:var(--card-bg);
+  border-radius:16px;box-shadow:var(--shadow);overflow:hidden;
+}
+
+/* Базовый shell -- header + content */
+.level-header{
+  padding:32px;text-align:center;background:linear-gradient(135deg,var(--primary),#7b66c8);
+  color:white;position:relative;
+}
+.level-header h1{margin-bottom:6px;font-size:22px}
+.level-header p{opacity:0.95;font-weight:600}
+.level-indicator{position:absolute;right:18px;top:18px;background:rgba(255,255,255,0.15);padding:8px 12px;border-radius:16px}
+
+
+/* Круглой важности: точка монтировки контента уровня */
+.level-body{padding:22px;background:rgba(0,0,0,0.02)}
+.level-aside{padding:20px;background:#fff;border-left:1px solid rgba(0,0,0,0.04);}
+
+/* диалог / карточки — базовые правила, конкретные правила уровней генерирует JS */
+.clues-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media(max-width:700px){.clues-grid{grid-template-columns:1fr} .hint-popup{width:260px}}
+.btn{padding:10px 16px;border-radius:10px;background:linear-gradient(135deg,var(--primary),#7b66c8);color:white;border:none;cursor:pointer}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}
+.game-message{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;padding:20px;border-radius:12px;z-index:1000;max-width:90%}
+
+/* стили для бюджетного уровня (должны совпадать по классам с тем, что генерирует BudgetLevel) */
+.stat-card{background:#fff;padding:18px;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,0.06);text-align:center}
+.budget-card{background:#fff;padding:18px;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,0.06)}
+
+/* exit button (вид как в уровне про мошенничество) */
+.header {
+  position: relative;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark, #7b66c8) 100%);
+  color: white;
+  padding: 60px 25px 25px;
+  text-align: center;
+}
+
+.header h1 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.header p {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.exit-button{
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(255,255,255,0.2);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  color: white;
+}
+.exit-button:hover{ background: rgba(255,255,255,0.3); transform: translateY(-2px); }
+
+.hint-wrapper {
+    position: relative; /* фиксируем в шапке */
+    top: 10px;
+    display: inline-block;
+}
+
+.hint-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.hint-indicator:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.hint-popup {
+    position: absolute;
+    top: 110%;     /* СТАБИЛЬНО: всегда под кнопкой */
+    left: 0;       
+    background: white;
+    color: var(--text);
+    padding: 18px 20px;
+    border-radius: 12px;
+    width: 280px;
+    border: 1px solid rgba(93, 113, 150, 0.15);
+    box-shadow: var(--shadow);
+    display: none;
+    z-index: 999;
+}
+
+.hint-popup.show {
+    display: block;
+}
+
+
+/* индикатор уровня (правый верхний угол) */
+.level-indicator {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255,255,255,0.2);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  backdrop-filter: blur(10px);
+  color: white;
+}
+
+@media (max-width: 600px) {
+    
+    .hint-popup {
+        width: 150%;
+        left: 10px;
+    }
+}
+

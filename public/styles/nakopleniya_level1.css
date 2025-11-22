@@ -78,55 +78,6 @@
             backdrop-filter: blur(10px);
         }
 
-        .hint-indicator {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .hint-indicator:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .hint-popup {
-            position: absolute;
-            top: 60px;
-            left: 20px;
-            background: white;
-            color: var(--text);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            width: 320px;
-            z-index: 100;
-            display: none;
-            border: 1px solid rgba(93, 113, 150, 0.1);
-        }
-
-        .hint-popup::before {
-            content: '';
-            position: absolute;
-            top: -8px;
-            left: 20px;
-            width: 0;
-            height: 0;
-            border-left: 8px solid transparent;
-            border-right: 8px solid transparent;
-            border-bottom: 8px solid white;
-        }
-
-        .hint-popup.show {
-            display: block;
-        }
 
         .stats-container {
             display: grid;
@@ -470,7 +421,7 @@
             }
             
             .hint-popup {
-                width: 280px;
+                width: 150%;
                 left: 10px;
             }
             

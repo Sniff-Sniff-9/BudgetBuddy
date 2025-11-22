@@ -79,50 +79,6 @@ body {
     backdrop-filter: blur(10px);
 }
 
-.hint-indicator {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-    margin-top: 20px; /* ↓↓↓ подсказка уйдёт вниз */
-    position: relative;
-}
-
-
-.hint-popup {
-    position: absolute;
-    background: white;
-    color: var(--text);
-    padding: 18px 20px;
-    border-radius: 12px;
-    width: 280px;
-    border: 1px solid rgba(93, 113, 150, 0.15);
-    box-shadow: var(--shadow);
-    display: none;
-    z-index: 999;
-}
-
-.hint-popup::before {
-    content: "";
-    position: absolute;
-    width: 0;
-    height: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 10px solid white;
-    top: -10px;
-}
-
-.hint-popup.show {
-    display: block;
-}
 .game-board {
     background-color: rgba(0, 0, 0, 0.03);
     border-radius: 10px;
@@ -435,10 +391,8 @@ body {
         padding: 12px;
     }
 
-    .hint-popup {
-        width: 280px;
-        left: 10px;
-    }
+
+    
 }
 
 .exit-button {

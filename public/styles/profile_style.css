@@ -210,8 +210,8 @@ h1 {
 /* Кнопка перехода к достижениям */
 /* Белая круглая кнопка со стрелкой */
 .achievements-btn {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   background: white;
   color: var(--accent);           /* твой фиолетовый цвет */
   border: none;
@@ -221,6 +221,7 @@ h1 {
   justify-content: center;
   cursor: pointer;
   transition: all 0.25s ease;
+  margin-right: 0.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
