@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Уровни</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="./styles/levels_style.css" rel="stylesheet">
+</head>
+<body>
+
+  <div class="main-container">
+
+    <!-- ШАПКА -->
+    <header class="page-header">
+      <button class="back-btn" onclick="window.location.href='themes.html'">
+        <img src="./images/icon-park-outline_return.png" alt="Назад" class="back-icon">
+      </button>
+      <h1 id="topic-title">Загрузка...</h1>
+      <div class="header-placeholder"></div> <!-- пустой блок для идеального центрирования -->
+    </header>
+
+    <!-- УРОВНИ -->
+    <div id="levels-container" class="levels-list"></div>
+
+  </div>
+
+  <!-- Модальное окно повышения уровня -->
+  <div id="levelUpModal" class="level-up-modal">
+    <div class="level-up-content">
+      <div class="level-up-circle">
+        <span id="newLevel">0</span>
+      </div>
+      <h2>Поздравляем!</h2>
+      <p>Вы достигли <strong><span id="newLevelText">0 уровня</span></strong></p>
+      <div class="sparkles">
+        <span>★</span><span>★</span><span>★</span><span>★</span>
+      </div>
+      <button class="level-up-btn" onclick="closeLevelUpModal()">Продолжить</button>
+    </div>
+  </div>
+
+
+  <script type="module">
+    import { auth, db, onAuthStateChanged, doc, getDoc, getDocs, collection, query, where, updateDoc, arrayUnion, increment } from './js/firebase.js';
+    import { initLevelUpChecker } from './js/level_up_modal.js';
+    
+    // Запускаем проверку при загрузке страницы
+    initLevelUpChecker();
+    const urlParams = new URLSearchParams(window.location.search);
+    const topic = urlParams.get('topic');
+    if (!topic) {
+      document.body.innerHTML = '<h1>Ошибка: тема не указана</h1>';
+      throw new Error("No topic");
+    }
+
+    const topicNames = {
+      nakopleniya: "Накопления",
+      bezopasnost: "Базовая безопасность",
+      moshenichestvo: "Мошенничество",
+      "finansovye-tseli": "Финансовые цели"
+    };
+
+    document.getElementById('topic-title').textContent = topicNames[topic] || topic;
+
+    function getStars(difficulty) {
+      return '★'.repeat(difficulty === 'easy' ? 1 : difficulty === 'medium' ? 2 : 3);
+    }
+
+    function createCard(level) {
+      const isCompleted = window.completedLevels.includes(level.id);
+      const btnText = isCompleted ? "Играть" : "Играть";
+
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="left">
+          <p class="title">${level.title || 'Загрузка...'}</p>
+          <p class="desc">${level.description || 'Загрузка...'}</p>
+        </div>
+        <div class="right">
+          <div class="stars">${getStars(level.difficulty)}</div>
+          <div class="xp">${level.xp} xp</div>
+          <button class="btn">
+            ${btnText}
+          </button>
+        </div>
+      `;
+
+      const btn = card.querySelector('button');
+      btn.addEventListener('click', () => {
+        const page = level.page || 'Nakoplenialvl1.html';
+        window.location.href = page;
+      });
+
+      return card;
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const userSnap = await getDoc(doc(db, "users", user.uid));
+      window.completedLevels = userSnap.data()?.completedLevels || [];
+
+      const q = query(
+        collection(db, "levels"),
+        where("topic", "==", topic)
+      );
+      const snap = await getDocs(q);
+
+      const container = document.getElementById('levels-container');
+      container.innerHTML = '';
+
+      if (snap.empty) {
+        container.innerHTML = '<p>Уровни не найдены.</p>';
+        return;
+      }
+
+      const levels = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      levels.sort((a, b) => (a.number || 0) - (b.number || 0));
+
+      levels.forEach(level => {
+        container.appendChild(createCard(level));
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,462 @@
+:root {
+    /* Новая палитра, согласованная с примером */
+    --primary: #8c77d9;
+    --primary-light: #8c77d9;
+    --primary-dark: #8c77d9;
+    --background: #F0F0F2;
+    --card-bg: #FFFFFF;
+    --text: #8c77d9;
+    --text-light: #5D7196;
+    --accent: #8c77d9;
+    --success: #4CAF50;
+    --warning: #FFA726;
+    --danger: #E57373;
+    --shadow: 0 4px 20px rgba(93, 113, 150, 0.15);
+    --radius: 16px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+body {
+    background-color: var(--background);
+    background: linear-gradient(135deg, var(--background) 0%, #e8e8f0 100%);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.game-container {
+    width: 100%;
+    max-width: 800px;
+    background-color: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    border: 1px solid rgba(93, 113, 150, 0.1);
+}
+
+.header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 25px;
+    text-align: center;
+    padding: 60px 25px 25px;
+    position: relative;
+}
+
+.header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+.header p {
+    font-weight: 400;
+    opacity: 0.9;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.level-indicator {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14px;
+    backdrop-filter: blur(10px);
+}
+
+.hint-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    margin-top: 20px; /* ↓↓↓ подсказка уйдёт вниз */
+    position: relative;
+}
+
+
+.hint-popup {
+    position: absolute;
+    background: white;
+    color: var(--text);
+    padding: 18px 20px;
+    border-radius: 12px;
+    width: 280px;
+    border: 1px solid rgba(93, 113, 150, 0.15);
+    box-shadow: var(--shadow);
+    display: none;
+    z-index: 999;
+}
+
+.hint-popup::before {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid white;
+    top: -10px;
+}
+
+.hint-popup.show {
+    display: block;
+}
+.game-board {
+    background-color: rgba(0, 0, 0, 0.03);
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.board-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 25px;
+    color: var(--primary-dark);
+    display: flex;
+    align-items: center;
+}
+
+.board-title i {
+    margin-right: 12px;
+    color: var(--accent);
+}
+
+.clues-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.clue-card {
+    background-color: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 2px 12px rgba(93, 113, 150, 0.08);
+    border: 1px solid rgba(93, 113, 150, 0.05);
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.clue-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(93, 113, 150, 0.15);
+    border-color: var(--accent);
+}
+
+.clue-card.selected::before {
+    content: "\f024";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 1.5rem;
+    color: var(--accent);
+}
+
+.clue-card.selected {
+    border: 2px solid var(--accent);
+    background-color: rgba(140, 119, 217, 0.05);
+}
+
+.clue-card.correct {
+    border: 2px solid var(--success);
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+.clue-card.incorrect {
+    border: 2px solid var(--danger);
+    background-color: rgba(229, 115, 115, 0.1);
+}
+
+.clue-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--primary-dark);
+    font-size: 1rem;
+}
+
+.dialog-container {
+    margin-top: 25px;
+    background-color: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 2px 12px rgba(93, 113, 150, 0.08);
+    border: 1px solid rgba(93, 113, 150, 0.05);
+}
+
+.dialog-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--primary-dark);
+}
+
+.dialog-content {
+    font-size: 0.95rem;
+    border-left: 3px solid var(--accent);
+    background-color: rgba(140, 119, 217, 0.05);
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+}
+
+.response-options {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+.response-option {
+    padding: 14px;
+    background-color: white;
+    border: 1px solid rgba(93, 113, 150, 0.1);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.response-option:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(93, 113, 150, 0.12);
+    background-color: rgba(140, 119, 217, 0.05);
+}
+
+.response-option.selected {
+    background-color: rgba(140, 119, 217, 0.2);
+    border-color: var(--accent);
+    font-weight: 600;
+}
+
+.response-option.correct {
+    border-color: var(--success);
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+.response-option.incorrect {
+    border-color: var(--danger);
+    background-color: rgba(229, 115, 115, 0.1);
+}
+
+.game-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 0 25px;
+}
+
+.btn {
+    padding: 14px 35px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn:disabled {
+    background: #ccc;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+.score-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.score-value {
+    color: var(--accent);
+    font-size: 18px;
+}
+
+.hints-panel {
+    background-color: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 2px 12px rgba(93, 113, 150, 0.08);
+    margin-top: 25px;
+}
+
+.hints-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 25px;
+    color: var(--primary-dark);
+    text-align: center;
+}
+
+.hint-item {
+    margin-bottom: 15px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(93, 113, 150, 0.08);
+    border: 1px solid rgba(93, 113, 150, 0.05);
+}
+
+.hint-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 12px 15px;
+    font-size: 0.95rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.hint-content {
+    background-color: rgba(140, 119, 217, 0.05);
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s, padding 0.3s;
+}
+
+.hint-content.active {
+    padding: 15px;
+    max-height: 250px;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.game-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    z-index: 1001;
+    max-width: 90%;
+    width: 400px;
+}
+
+.game-message h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--primary-dark);
+    margin-bottom: 15px;
+}
+
+.game-message p {
+    font-size: 16px;
+    color: var(--text-light);
+    margin-bottom: 20px;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 600px) {
+    .header h1 {
+        font-size: 20px;
+    }
+
+    .header p {
+        font-size: 16px;
+    }
+
+    .board-title, .hints-title {
+        font-size: 18px;
+    }
+
+    .clues-container {
+        grid-template-columns: 1fr;
+    }
+
+    .clue-card {
+        font-size: 0.9rem;
+        padding: 20px;
+    }
+
+    .dialog-content, .response-option {
+        font-size: 0.9rem;
+    }
+
+    .game-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 12px;
+    }
+
+    .hint-popup {
+        width: 280px;
+        left: 10px;
+    }
+}
+
+.exit-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    color: white;
+}
+
+.exit-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
