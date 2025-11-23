@@ -398,38 +398,71 @@
             color: var(--text-light);
             margin-bottom: 20px;
         }
+/* === ФИНАЛЬНАЯ АДАПТИВКА — РАБОТАЕТ НА 320 px НА 100% === */
+@media (max-width: 600px) {
+    .stats-container {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 20px;
+    }
 
+    .header h1 { font-size: 20px; }
+    .header p { font-size: 16px; }
 
-        @media (max-width: 600px) {
-            
-            .stats-container {
-                grid-template-columns: 1fr;
-            }
-            .header h1 {
-                font-size: 20px;
-            }
-            .header p {
-                font-size: 16px;
-            }
-            .budget-cards {
-                grid-template-columns: 1fr;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .hint-popup {
-                width: 150%;
-                left: 10px;
-            }
-            
-            .header h1 {
-                font-size: 20px;
-            }
-            
-            .header p {
-                font-size: 16px;
-            }
-        }
+    .action-buttons {
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px;
+    }
+    .action-btn {
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+
+    .budget-cards {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        justify-items: center;        /* центрируем карточки */
+    }
+
+    .budget-card {
+        width: 100%;
+        max-width: 380px;
+        padding: 22px 18px;
+        margin: 0 auto;
+    }
+
+    .budget-name { font-size: 17px; }
+    .budget-icon { width: 42px; height: 42px; font-size: 18px; }
+    .budget-amount { font-size: 23px; margin: 14px 0; }
+    .budget-controls { gap: 12px; margin-top: 18px; }
+    .budget-btn { width: 40px; height: 40px; }
+    .budget-input { width: 105px; font-size: 17px; padding: 10px 8px; }
+}
+
+/* === ОТДЕЛЬНЫЙ запрос для самых узких экранов (320–360px) === */
+@media (max-width: 360px) {
+    .budget-card {
+        max-width: 300px !important;   /* Жёстко ограничиваем ширину */
+        padding: 18px 14px;
+    }
+
+    .budget-input {
+        width: 88px;
+        font-size: 16px;
+    }
+
+    .budget-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    .budget-name {
+        font-size: 16px;
+    }
+
+    .budget-amount {
+        font-size: 21px;
+    }
+}

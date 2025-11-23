@@ -37,7 +37,6 @@ body{
 @media(max-width:700px){.clues-grid{grid-template-columns:1fr} .hint-popup{width:260px}}
 .btn{padding:10px 16px;border-radius:10px;background:linear-gradient(135deg,var(--primary),#7b66c8);color:white;border:none;cursor:pointer}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999}
-.game-message{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;padding:20px;border-radius:12px;z-index:1000;max-width:90%}
 
 
 .stat-card{background:#fff;padding:18px;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,0.06);text-align:center}
@@ -143,6 +142,34 @@ body{
         width: 150%;
         left: 10px;
     }
+}
+
+.game-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    z-index: 1001;
+    max-width: 90%;
+    width: 400px;
+}
+
+.game-message h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--primary-dark);
+    margin-bottom: 15px;
+}
+
+.game-message p {
+    font-size: 16px;
+    color: var(--text-light);
+    margin-bottom: 20px;
 }
 
 .message-buttons {

@@ -359,6 +359,10 @@ body {
         font-size: 20px;
     }
 
+    .dialog-container {
+        font-size:14px;
+    }
+
     .header p {
         font-size: 16px;
     }
@@ -377,7 +381,15 @@ body {
     }
 
     .dialog-content, .response-option {
-        font-size: 0.9rem;
+        font-size: 12px;
+    }
+
+    .dialog-content{
+        font-size: 12px;
+    }
+
+    .dialog-title{
+        font-size: 16px;
     }
 
     .game-controls {
@@ -392,6 +404,12 @@ body {
 
 
     
+}
+
+@media(max-width:480px){
+    .dialog-container {
+        font-size:14px;
+    }
 }
 
 .exit-button {
