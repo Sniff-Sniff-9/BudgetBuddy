@@ -1,5 +1,5 @@
 :root {
-    /* Новая палитра, согласованная с примером */
+
     --primary: #8c77d9;
     --primary-light: #8c77d9;
     --primary-dark: #8c77d9;
@@ -354,7 +354,6 @@ body {
     margin-bottom: 20px;
 }
 
-/* Адаптивность для мобильных устройств */
 @media (max-width: 600px) {
     .header h1 {
         font-size: 20px;

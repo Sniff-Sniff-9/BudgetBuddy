@@ -1,11 +1,11 @@
-/* styles/bezopasnost_level1_style.css */
+
 
 #levelBody {
     padding: 20px;
     font-family: 'Montserrat', sans-serif;
 }
 
-/* Одна строка сверху */
+
 .top-bar {
     display: flex;
     justify-content: space-between;
@@ -51,7 +51,7 @@
     transition: width 0.4s ease;
 }
 
-/* Карточка ситуации */
+/* Карточка */
 .situation-card {
     background: white;
     border-radius: 20px;
@@ -62,7 +62,7 @@
     line-height: 1.5;
 }
 
-/* Ответы — строго колонка */
+
 .answers {
     display: flex;
     flex-direction: column;
@@ -115,7 +115,7 @@
     background: rgba(229,115,115,0.08);
 }
 
-/* Фидбек */
+
 .feedback {
     text-align: center;
     padding: 16px;

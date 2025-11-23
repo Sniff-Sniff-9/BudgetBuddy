@@ -9,24 +9,25 @@
 </head>
 
 <body>
-
+<div class="profile-wrapper"></div>
   <div class="profile-header">
-    <!-- Кнопка выхода слева -->
+   
     <button id="logoutBtn" class="header-icon-btn left" title="Выйти">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-        <!-- Зеркально отражённая иконка — стрелка влево -->
+       
         <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
         <polyline points="8 7 3 12 8 17"></polyline>
         <line x1="3" y1="12" x2="15" y2="12"></line>
       </svg>
     </button>
 
-    <!-- Заголовок — всегда по центру -->
+  
     <h1 class="page-title">Профиль</h1>
 
-    <!-- Пустой блок справа — чтобы центр остался настоящим центром -->
+   
     <div class="header-placeholder"></div>
   </div>
+</div>
 
   <div class="profile-container">
     <div class="avatar">
@@ -78,7 +79,7 @@
 
   <div class="difficulty-section gradient-purple">
     <p>Прохождение по сложности</p>
-    <div class="chart-container">
+    <div class="chart-container" id="id-chart-container">
       <canvas id="levelsChart"></canvas>
     </div>
     <div id="noLevelsMessage" class="no-levels-message">
@@ -103,7 +104,7 @@
     </div>
   </div>
 
-    <!-- Модальное окно редактирования профиля -->
+
   <div id="editProfileModal" class="modal-overlay" style="display: none;">
     <div class="modal-content edit-profile-modal">
       <div class="modal-header">
@@ -112,7 +113,7 @@
       </div>
 
       <form id="editProfileForm" class="edit-profile-form">
-        <!-- Фото профиля -->
+       
         <div class="avatar-upload">
           <div class="avatar-preview">
             <img id="currentAvatar" src="./images/Frame 6.png" alt="Аватар">
@@ -123,19 +124,19 @@
           </label>
         </div>
 
-        <!-- Имя -->
+     
         <div class="form-group">
           <label>Имя</label>
           <input type="text" id="editName" placeholder="Имя" required>
         </div>
 
-        <!-- Никнейм -->
+        
         <div class="form-group">
           <label>Никнейм</label>
           <input type="text" id="editNickname" placeholder="Никнейм" required>
         </div>
 
-        <!-- Смена пароля (по желанию) -->
+        
         <div class="form-group password-group">
           <label>Новый пароль <span class="optional">(оставьте пустым, чтобы не менять)</span></label>
           <input type="password" id="editPassword" placeholder="Пароль">

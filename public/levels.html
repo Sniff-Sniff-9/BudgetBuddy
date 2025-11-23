@@ -11,21 +11,21 @@
 
   <div class="main-container">
 
-    <!-- ШАПКА -->
+
     <header class="page-header">
       <button class="back-btn" onclick="window.location.href='themes.html'">
         <img src="./images/icon-park-outline_return.png" alt="Назад" class="back-icon">
       </button>
       <h1 id="topic-title">Загрузка...</h1>
-      <div class="header-placeholder"></div> <!-- пустой блок для идеального центрирования -->
+      <div class="header-placeholder"></div> 
     </header>
 
-    <!-- УРОВНИ -->
+
     <div id="levels-container" class="levels-list"></div>
 
   </div>
 
-  <!-- Модальное окно повышения уровня -->
+  
   <div id="levelUpModal" class="level-up-modal">
     <div class="level-up-content">
       <div class="level-up-circle">
@@ -40,12 +40,34 @@
     </div>
   </div>
 
+  <!-- Модальное окно достижения -->
+<div id="achievementModal" class="level-up-modal">
+  <div class="level-up-content achievement-modal-content">
+    
+    <!-- Искры (те же, что и в левел-апе) -->
+    <div class="sparkles">
+      <span>★</span><span>★</span><span>★</span><span>★</span>
+    </div>
+
+    <!-- Круглая иконка достижения -->
+    <div class="level-up-circle">
+      <img id="achievementIcon" src="" alt="Достижение" style="width: 80%; height: 80%; object-fit: contain;">
+    </div>
+
+    <h2>Достижение разблокировано!</h2>
+    <p id="achievementName" style="font-size: 1.4rem; font-weight: bold; margin: 12px 0;">Первая победа</p>
+    <p id="achievementDesc" style="opacity: 0.9; line-height: 1.5; margin-bottom: 20px;">Вы прошли свой первый уровень!</p>
+
+    <button class="level-up-btn" onclick="closeAchievementModal()">Круто!</button>
+  </div>
+</div>
+
 
   <script type="module">
     import { auth, db, onAuthStateChanged, doc, getDoc, getDocs, collection, query, where, updateDoc, arrayUnion, increment } from './js/firebase.js';
     import { initLevelUpChecker } from './js/level_up_modal.js';
     
-    // Запускаем проверку при загрузке страницы
+    
     initLevelUpChecker();
     const urlParams = new URLSearchParams(window.location.search);
     const topic = urlParams.get('topic');

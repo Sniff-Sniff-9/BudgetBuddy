@@ -1,9 +1,9 @@
-// achievements_loader.js
+
 import { auth, db, collection, getDocs, doc, getDoc, onAuthStateChanged } from './firebase.js';
 
 document.addEventListener("DOMContentLoaded", () => {
     onAuthStateChanged(auth, async (user) => {
-        if (!user) return; // не авторизован → ничего не делаем
+        if (!user) return; 
 
         await loadAchievements(user.uid);
     });
@@ -14,22 +14,41 @@ async function loadAchievements(uid) {
     if (!listContainer) return;
 
     try {
-        // === 1. Загружаем достижения ===
+        
         const achRef = collection(db, "achievements");
         const snapshot = await getDocs(achRef);
 
-        // === 2. Загружаем юзера ===
+      
         const userRef = doc(db, "users", uid);
         const userSnap = await getDoc(userRef);
         const userData = userSnap.data() || {};
 
-        // Массивая выполненных достижений
+        
         const completed = userData.completedAchievements || [];
 
-        // === 3. Рендерим карточки ===
+        
+        const achievements = [];
+        
         snapshot.forEach(docSnap => {
             const ach = docSnap.data();
-            const card = createAchievementCard(ach, docSnap.id, completed);
+            const unlocked = completed.includes(docSnap.id);
+            achievements.push({
+                id: docSnap.id,
+                data: ach,
+                unlocked: unlocked
+            });
+        });
+
+       
+        achievements.sort((a, b) => {
+            if (a.unlocked && !b.unlocked) return -1;
+            if (!a.unlocked && b.unlocked) return 1;  
+            return 0; 
+        });
+
+        
+        achievements.forEach(ach => {
+            const card = createAchievementCard(ach.data, ach.id, completed);
             listContainer.appendChild(card);
         });
 
@@ -44,7 +63,7 @@ function createAchievementCard(ach, id, completedList) {
     card.className = "achievement-card";
     card.dataset.id = id;
 
-    // Проверяем: есть ли достижения в списке юзера
+    
     const unlocked = completedList.includes(id);
 
     card.innerHTML = `

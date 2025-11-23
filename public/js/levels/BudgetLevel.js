@@ -1,11 +1,12 @@
-// BudgetLevel.js
+
+
 import BaseLevel from './BaseLevel.js';
 export default class BudgetLevel extends BaseLevel {
   constructor(config, opts){ super(config, opts); }
 
   render(){
     const cfg = this.config;
-    // создаём DOM на основе конфигурации (взято из вашего HTML)
+
     const html = document.createElement('div');
     html.innerHTML = `
       <div class="stats-container">
@@ -32,7 +33,7 @@ export default class BudgetLevel extends BaseLevel {
     `;
     this.mount.innerHTML = '';
     this.mount.appendChild(html);
-    // fill hint
+
     this.setHint('Распределите все доступные средства так, чтобы накопления достигали цели.');
   }
 
@@ -41,7 +42,7 @@ export default class BudgetLevel extends BaseLevel {
     const mount = this.mount;
     const available = cfg.totalIncome - cfg.fixedExpenses;
 
-    // helper: format/calc
+
     const format = v => (parseInt(v)||0).toLocaleString('ru-RU') + ' ₽';
     const getRemaining = () => {
       let sum = 0;
@@ -52,7 +53,7 @@ export default class BudgetLevel extends BaseLevel {
       return available - sum;
     };
 
-    // render category cards
+
     const cardsRoot = mount.querySelector('#budgetCards');
     cardsRoot.innerHTML = '';
     cfg.categories.forEach(cat => {
@@ -90,7 +91,7 @@ export default class BudgetLevel extends BaseLevel {
       mount.querySelector('#progressFill').style.width = progress + '%';
     };
 
-    // plus/minus handlers
+ 
     mount.querySelectorAll('.budget-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const id = btn.dataset.id;
@@ -102,34 +103,63 @@ export default class BudgetLevel extends BaseLevel {
       });
     });
 
-    // inputs: keep numeric only
+
     cfg.categories.forEach(cat => {
       const input = mount.querySelector(`#input-${cat.id}`);
       input.addEventListener('input', () => {
-        // sanitize
+       
         input.value = input.value.replace(/[^\d]/g,'') || '0';
         updateUI();
       });
     });
 
-    mount.querySelector('#submitBtn').addEventListener('click', async () => {
-      const remaining = getRemaining();
-      const savings = parseInt((mount.querySelector('#input-savings')||{value:0}).value || 0);
-      if(remaining !== 0){
-        this.showMessage('Внимание!','Сначала распределите все доступные средства!');
-        return;
-      }
-      if(savings >= cfg.goalAmount){
-        this.showMessage('Поздравляем!','Вы достигли цели накоплений!', async () => {
-          // завершение уровня — передаём id и редирект
-          await this.completeLevel({ levelId: cfg.id, xp: 100, redirect: `levels.html?topic=nakopleniya` });
-        });
-      } else {
-        this.showMessage('Цель не достигнута', `Нужно ещё ${ (cfg.goalAmount - savings).toLocaleString() } ₽. Попробуйте уменьшить траты.`);
-      }
-    });
+mount.querySelector('#submitBtn').addEventListener('click', async () => {
+  const remaining = getRemaining();
+  const savings = parseInt((mount.querySelector('#input-savings') || { value: 0 }).value || 0);
 
-    // initial update
+ 
+  if (remaining !== 0) {
+    this.showMessage('Внимание!', 'Сначала распределите все доступные средства!');
+    return;
+  }
+
+ 
+  if (savings >= cfg.goalAmount) {
+    this.showMessage(
+      'Уровень пройден!',
+      `Поздравляем! Вы накопили нужную сумму!`,
+      [
+        {
+          text: 'Перепройти',
+          action: () => location.reload() 
+        },
+        {
+          text: 'Выйти',
+          action: async () => {
+            await this.completeLevel({
+              levelId: cfg.id,
+              xp: 100,
+              redirect: `levels.html?topic=nakopleniya`,
+              achievementId: 'master-prioritetov'
+            });
+          },
+          primary: true 
+        }
+      ]
+    );
+  } 
+ 
+  else {
+    this.showMessage(
+      'Цель не достигнута',
+      `Нужно ещё ${(cfg.goalAmount - savings).toLocaleString()} ₽.<br>Попробуйте уменьшить траты или найти дополнительные доходы.`,
+      [{ text: 'Понятно', action: () => {}, primary: true }]
+    );
+  }
+});
+
+    
     updateUI();
   }
+
 }

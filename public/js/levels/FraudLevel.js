@@ -1,4 +1,4 @@
-// FraudLevel.js
+
 import BaseLevel from './BaseLevel.js';
 export default class FraudLevel extends BaseLevel {
   constructor(config, opts){ super(config, opts); }
@@ -92,7 +92,7 @@ export default class FraudLevel extends BaseLevel {
         const el = [...responseOptions].find(o => parseInt(o.dataset.option) === selectedResponse);
         if(el) el.classList.add(responseCorrect ? 'correct' : 'incorrect');
       }
-      // show correct option
+     
       const correctEl = [...responseOptions].find(o => parseInt(o.dataset.option) === correctResponse);
       if(correctEl) correctEl.classList.add('correct');
 
@@ -102,17 +102,62 @@ export default class FraudLevel extends BaseLevel {
 
       checkBtn.disabled = true;
 
-      // show modal
-      let title, text;
-      if(cluesCorrect && responseCorrect){ title='Отлично!'; text='Вы успешно выявили все признаки мошенничества и правильно отреагировали!'; }
-      else if(cluesCorrect){ title='Хорошо, но можно лучше'; text='Вы нашли все улики, но реакция на звонок была неверной.'; }
-      else if(responseCorrect){ title='Неплохо'; text='Вы правильно отреагировали, но пропустили улики.'; }
-      else { title='Нужно учиться'; text='Изучите подсказки и попробуйте снова!'; }
+    let title, text;
 
-      this.showMessage(title, `${text}<br>Ваш счёт: <strong>${score}</strong>`, async () => {
-        // complete level only if user found both parts (for demo — allow any)
-        await this.completeLevel({ levelId: cfg.id, xp: (cluesCorrect && responseCorrect) ? 200 : 100, redirect: `levels.html?topic=moshenichestvo` });
-      });
+if (cluesCorrect && responseCorrect) {
+ 
+  title = 'Отлично!';
+  text = 'Вы успешно выявили все признаки мошенничества и правильно отреагировали!';
+
+  this.showMessage(
+    title,
+    `${text}<br><br>Ваш счёт: <strong>${score}</strong> баллов<br>`,
+    [
+      {
+        text: 'Перепройти',
+        action: () => location.reload()
+      },
+      {
+        text: 'Выйти',
+        action: async () => {
+
+          await this.completeLevel({
+            levelId: cfg.id,
+            xp: 100,
+            redirect: `levels.html?topic=moshenichestvo`,
+            achievementId: 'skaner-ugroz'
+          });
+        },
+        primary: true
+      }
+    ]
+  );
+
+} else {
+
+  if (cluesCorrect) {
+    title = 'Хорошо, но можно лучше';
+    text = 'Вы нашли все улики, но реакция на звонок была неверной.';
+  } else if (responseCorrect) {
+    title = 'Неплохо';
+    text = 'Вы правильно отреагировали, но пропустили важные улики.';
+  } else {
+    title = 'Нужно учиться!';
+    text = 'Вы пропустили улики и неправильно отреагировали. Изучите подсказки и попробуйте снова!';
+  }
+
+  this.showMessage(
+    title,
+    `${text}<br><br>Ваш счёт: <strong>${score}</strong> баллов<br>`,
+    [
+      {
+        text: 'Перепройти',
+        action: () => location.reload(),
+        primary: true  
+      }
+    ]
+  );
+}
     });
   }
 }

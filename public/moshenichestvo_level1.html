@@ -143,7 +143,7 @@
 
 <script type="module">
 import { auth, db, doc, getDoc, updateDoc, arrayUnion, onAuthStateChanged } from './js/firebase.js';
-import { addXP } from './js/level_up_modal.js';  // ← Вот и всё! Только это добавили
+import { addXP } from './js/level_up_modal.js';  
 
 // Проверка авторизации
 onAuthStateChanged(auth, (user) => {
@@ -167,8 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const hintIndicator = document.querySelector('.hint-indicator');
     const hintPopup = document.querySelector('.hint-popup');
 
-    // === ВСЯ ИГРОВАЯ ЛОГИКА (осталась без изменений) ===
-    // Подсказка, аккордеон, выбор улик, выбор ответа — оставляем как у тебя
+  
     hintIndicator.addEventListener('click', (e) => {
         e.stopPropagation();
         hintPopup.classList.toggle('show');
@@ -284,7 +283,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
-    // === ГЛАВНОЕ: ПРОХОЖДЕНИЕ УРОВНЯ ===
+  
     async function completeLevel(isPerfect) {
         const user = auth.currentUser;
         if (!user) return;
@@ -295,11 +294,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const snap = await getDoc(userRef);
         const data = snap.data() || {};
 
-        // Если уровень ещё не пройден — начисляем XP и отмечаем
+        
         if (!data.completedLevels?.includes(levelId)) {
-            const xpToAdd = isPerfect ? 200 : 100;  // 200 за идеал, 100 за просто проход
+            const xpToAdd = isPerfect ? 200 : 100;  
             alert(`+${xpToAdd} XP! Уровень пройден.`);
-            await addXP(xpToAdd);  // ← Используем твою функцию!
+            await addXP(xpToAdd);  
 
             await updateDoc(userRef, {
                 completedLevels: arrayUnion(levelId)

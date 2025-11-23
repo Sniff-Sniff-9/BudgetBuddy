@@ -85,7 +85,7 @@ h1 {
   font-weight: 500;
 }
 
-/* Пульс для 100% */
+
 .achievement-card.completed {
   animation: pulse 1.5s infinite;
 }
@@ -106,14 +106,14 @@ h1 {
 }
 
 /*Заголовок*/
-/* Шапка — идеально выровнена с карточками */
+
 .page-header {
   width: 100%;
-  max-width: 528px;           /* ← ТОЧНО ТАКАЯ ЖЕ ШИРИНА, как у .card */
+  max-width: 528px;          
   margin: 20px auto 16px;
-  padding: 0 20px;            /* ← как у body */
+  padding: 0 20px;           
   display: grid;
-  grid-template-columns: 72px 1fr 72px;  /* лево | центр | право (пусто) */
+  grid-template-columns: 72px 1fr 72px;  
   align-items: center;
   box-sizing: border-box;
 }
@@ -127,7 +127,7 @@ h1 {
   text-align: center;
 }
 
-/* НОВАЯ КНОПКА "НАЗАД" — ТОЧНО КАК В ПРОФИЛЕ */
+
 .back-btn {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
@@ -152,12 +152,12 @@ h1 {
   box-shadow: 0 8px 25px rgba(122, 69, 188, 0.35);
 }
 
-/* Стрелка меняет цвет на белый при hover — как в профиле */
+
 .back-btn:hover .back-icon {
-  filter: brightness(0) invert(1); /* чисто белый */
+  filter: brightness(0) invert(1); 
 }
 
-/* Базовый цвет стрелки — фиолетовый */
+
 .back-icon {
   width: 24px;
   height: 24px;
@@ -166,12 +166,12 @@ h1 {
   transition: filter 0.3s ease;
 }
 
-/* Адаптив — на телефоне всё идеально */
+
 @media (max-width: 480px) {
   .page-header {
     margin: 16px auto 12px;
     padding: 0 16px;
-    grid-template-columns: 64px 1fr 64px;  /* чуть меньше */
+    grid-template-columns: 64px 1fr 64px;  
   }
 
   .page-header h1 {
@@ -197,19 +197,19 @@ h1 {
 .achievement-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(100, 100, 100, 0.9); /* плотный серый */
+    background: rgba(100, 100, 100, 0.9); 
     border-radius: inherit;
     z-index: 5;
     backdrop-filter: blur(1px);
-    mix-blend-mode: multiply; /* <-- перекрашивает фон */
+    mix-blend-mode: multiply; 
 }
 
 
 .achievement-card.locked {
-  background: #bfbfbf;         /* фон серый */
-  color: #696969;              /* текст тусклый */
+  background: #bfbfbf;        
+  color: #696969;              
 }
 
 .achievement-card.locked img {
-  filter: grayscale(100%);     /* иконка тоже серая */
+  filter: grayscale(100%);   
 }

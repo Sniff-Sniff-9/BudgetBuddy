@@ -7,6 +7,11 @@ import {
 
 import {getXpForNextLevel} from './level_up_modal.js'
 
+const chartContainer = document.getElementById('id-chart-container');
+    const canvas = document.getElementById('levelsChart');
+    const noLevelsMsg = document.getElementById('noLevelsMessage');
+    const legend = document.querySelector('.difficulty-inner'); 
+
 onAuthStateChanged(auth, async (user) => {
 if (!user) {
     window.location.href = 'index.html';
@@ -31,15 +36,14 @@ try {
 
     const avatarEl = document.querySelector('.avatar');
 
-    // Если в базе есть аватар — используем его
+   
     if (data.avatar && data.avatar.trim() !== '') {
     avatarEl.style.backgroundImage = `url(${data.avatar})`;
     } else {
-    // Если нет — дефолтная картинка (та, что у тебя в CSS)
-    avatarEl.style.backgroundImage = `url('./images/Frame 6.png')`;  // или '../images/Frame 6.png' — как у тебя в пути
+   
+    avatarEl.style.backgroundImage = `url('./images/Frame 6.png')`;  
     }
 
-    // Убедись, что background-size и position остались
     avatarEl.style.backgroundSize = 'cover';
     avatarEl.style.backgroundPosition = 'center';
 
@@ -65,10 +69,15 @@ try {
     });
     }
 
-    const canvas = document.getElementById('levelsChart');
-    const noLevelsMsg = document.getElementById('noLevelsMessage');
-    const legend = document.querySelector('.difficulty-inner'); 
+    if (user) {
+    await loadProfileAchievements(user.uid);
+  } else {
+    showThreeLocked();
+  }
+
+    
     if (completedIds.length === 0) {
+    chartContainer.classList.remove('active');
     canvas.style.display = 'none';
     legend.style.display = 'none';
     noLevelsMsg.classList.add('active');
@@ -77,6 +86,7 @@ try {
         window.levelsChartInstance.destroy();
     }
     } else {
+    chartContainer.classList.add('active');
     canvas.style.display = 'block';
     legend.style.display = 'flex';
     noLevelsMsg.classList.remove('active');
@@ -90,6 +100,8 @@ try {
         stats.medium ,
         stats.hard 
     ];
+
+    console.log(safeData);
 
     window.levelsChartInstance = new Chart(canvas, {
         type: 'doughnut',
@@ -124,7 +136,7 @@ try {
 }
 });
 
-// ==================== МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ ПРОФИЛЯ ====================
+
 
 const editModal = document.getElementById('editProfileModal');
 const closeModalBtn = document.getElementById('closeEditProfileModal');
@@ -132,10 +144,10 @@ const cancelBtn = document.getElementById('cancelEditProfile');
 const avatarInput = document.getElementById('avatarInput');
 const avatarPreview = document.getElementById('currentAvatar');
 
-// Глобальная переменная, чтобы не делать getDoc два раза
+
 let currentUserData = null;
 
-// Открытие модалки — теперь используем уже загруженные данные!
+
 function openEditProfileModal() {
   if (!currentUserData) {
     alert('Данные ещё загружаются...');
@@ -148,7 +160,7 @@ function openEditProfileModal() {
   const avatarUrl = currentUserData.avatar || './images/Frame 6.png';
   avatarPreview.src = avatarUrl;
 
-  // Обновляем аватар на главной странице профиля
+  
   const profileAvatar = document.querySelector('.avatar');
   if (profileAvatar) {
     profileAvatar.style.backgroundImage = `url(${avatarUrl})`;
@@ -170,7 +182,7 @@ function closeEditModal() {
 closeModalBtn.onclick = cancelBtn.onclick = closeEditModal;
 editModal.onclick = e => { if (e.target === editModal) closeEditModal(); };
 
-// Предпросмотр выбранного аватара
+
 avatarInput.onchange = () => {
   const file = avatarInput.files[0];
   if (file) {
@@ -180,7 +192,7 @@ avatarInput.onchange = () => {
   }
 };
 
-// Сохранение (с base64 и сжатием)
+
 document.getElementById('editProfileForm').addEventListener('submit', async e => {
   e.preventDefault();
 
@@ -192,7 +204,7 @@ document.getElementById('editProfileForm').addEventListener('submit', async e =>
     username: document.getElementById('editNickname').value.trim(),
   };
 
-  // Смена пароля
+  
   const newPassword = document.getElementById('editPassword').value;
   if (newPassword) {
     try {
@@ -204,7 +216,7 @@ document.getElementById('editProfileForm').addEventListener('submit', async e =>
     }
   }
 
-  // Аватар → base64 с сжатием
+  
   if (avatarInput.files[0]) {
     const file = avatarInput.files[0];
     const img = new Image();
@@ -235,7 +247,7 @@ document.getElementById('editProfileForm').addEventListener('submit', async e =>
     return;
   }
 
-  // Если аватара нет — сохраняем сразу
+  
   await saveProfile(updates);
 });
 
@@ -251,9 +263,7 @@ async function saveProfile(updates) {
   }
 }
 
-// ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
-// ВОТ ЭТО САМОЕ ГЛАВНОЕ — ПОДКЛЮЧЕНИЕ КНОПКИ (в самый конец файла!)
-// ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+
 document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('editProfileBtn');
   if (btn) {
@@ -267,3 +277,87 @@ document.getElementById('logoutBtn')?.addEventListener('click', async () => {
     window.location.href = 'index.html';
   }
 });
+
+
+
+const achievementIconsContainer = document.querySelector('.achievement-icons');
+
+async function loadProfileAchievements(userId) {
+  if (!userId) {
+    showThreeLocked();
+    return;
+  }
+
+  try {
+    const userDoc = await getDoc(doc(db, 'users', userId));
+    if (!userDoc.exists()) {
+      showThreeLocked();
+      return;
+    }
+
+    const data = userDoc.data();
+    const completedIds = data.completedAchievements || []; 
+
+ 
+    if (completedIds.length === 0) {
+      showThreeLocked();
+      return;
+    }
+
+   
+    const idsToShow = completedIds.slice(0, 3);
+
+    
+    const promises = idsToShow.map(id => 
+      getDoc(doc(db, 'achievements', id))
+    );
+    const snaps = await Promise.all(promises);
+
+    const achievements = [];
+    snaps.forEach((snap, i) => {
+      if (snap.exists()) {
+        const meta = snap.data();
+        achievements.push({
+          icon: meta.icon || 'default_achievement.png',
+          name: meta.name || 'Достижение'
+        });
+      }
+    });
+
+    
+    renderAchievements(achievements);
+
+  } catch (err) {
+    console.error('Ошибка загрузки достижений:', err);
+    showThreeLocked();
+  }
+}
+
+function renderAchievements(unlocked = []) {
+  achievementIconsContainer.innerHTML = '';
+
+
+  unlocked.forEach(ach => {
+    const div = document.createElement('div');
+    div.className = 'achievement-icon unlocked';
+    div.style.backgroundImage = `url(./images/${ach.icon})`;
+    div.title = ach.name;
+    achievementIconsContainer.appendChild(div);
+  });
+
+
+  const emptyCount = 3 - unlocked.length;
+  for (let i = 0; i < emptyCount; i++) {
+    const div = document.createElement('div');
+    div.className = 'achievement-icon locked';
+    achievementIconsContainer.appendChild(div);
+  }
+}
+
+function showThreeLocked() {
+  achievementIconsContainer.innerHTML = `
+    <div class="achievement-icon locked"></div>
+    <div class="achievement-icon locked"></div>
+    <div class="achievement-icon locked"></div>
+  `;
+}

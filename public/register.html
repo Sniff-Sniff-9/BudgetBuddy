@@ -1,4 +1,4 @@
-<!-- public/pages/register.html -->
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -53,6 +53,10 @@
           completedAchievements: [],
           avatar: ""
         });
+
+        await setDoc(doc(db, "usersaves", user.uid), {
+           saves: {}       
+});
 
         window.location.href = 'profile.html';
       } catch (err) {

@@ -1,4 +1,4 @@
-// levels/SecurityLevel.js
+
 import BaseLevel from './BaseLevel.js';
 
 export default class SecurityLevel extends BaseLevel {
@@ -48,12 +48,12 @@ export default class SecurityLevel extends BaseLevel {
       <div class="feedback" id="feedback"></div>
     `;
 
-    // КЛЮЧЕВОЙ МОМЕНТ: подсказка меняется сразу при появлении вопроса!
+   
     this.setHint(q.hint);
   }
 
   bind() {
-    // Клик по ответу
+    
     this.mount.querySelectorAll('.answer-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         if (btn.disabled) return;
@@ -61,7 +61,7 @@ export default class SecurityLevel extends BaseLevel {
       });
     });
 
-    // Запуск таймера
+    
     this.startTimer();
   }
 
@@ -78,7 +78,7 @@ export default class SecurityLevel extends BaseLevel {
 
       if (time < 0) {
         clearInterval(this.timer);
-        this.handleAnswer(null); // таймаут
+        this.handleAnswer(null); 
       }
     };
 
@@ -92,17 +92,17 @@ export default class SecurityLevel extends BaseLevel {
     const correct = q.correctAnswer;
     const isCorrect = selected === correct;
 
-    // Блокируем кнопки
+   
     this.mount.querySelectorAll('.answer-btn').forEach(b => b.disabled = true);
 
-    // Подсвечиваем
+    
     this.mount.querySelectorAll('.answer-btn').forEach(btn => {
       const id = parseInt(btn.dataset.id);
       if (id === correct) btn.classList.add('correct');
       if (id === selected && !isCorrect) btn.classList.add('wrong');
     });
 
-    // Фидбек
+
     const feedback = this.mount.querySelector('#feedback');
     if (isCorrect) {
       this.combo++;
@@ -117,11 +117,11 @@ export default class SecurityLevel extends BaseLevel {
       `;
     }
 
-    // Обновляем счёт сразу
+   
     this.mount.querySelector('#score-value').textContent = this.score;
     feedback.classList.add('show');
 
-    // Следующий вопрос
+ 
     setTimeout(() => {
       if (++this.current >= this.questions.length) {
         this.complete();
@@ -132,19 +132,52 @@ export default class SecurityLevel extends BaseLevel {
     }, 2800);
   }
 
-  complete() {
+ complete() {
+  const perfectScore = this.score >= 300; 
+  
+
+  if (perfectScore) {
+   
     this.showMessage(
-      "Уровень пройден!",
-      `Отлично! Вы набрали <strong>${this.score}</strong> очков и стали настоящим экспертом в финансовой безопасности!`,
-      () => {
-        this.completeLevel({
-          levelId: this.config.id,
-          xp: Math.max(80, Math.floor(this.score / 3)),
-          redirect: `levels.html?topic=${this.config.topic}`
-        });
-      }
+      'Идеально!',
+      `Вы набрали <strong>${this.score}</strong> очков!<br><br>`,
+      [
+        {
+          text: 'Перепройти',
+          action: () => location.reload()
+        },
+        {
+          text: 'Выйти',
+          action: async () => {
+    
+            await this.completeLevel({
+              levelId: this.config.id,
+              xp: 100,
+              redirect: `levels.html?topic=${this.config.topic}`,
+              achievementId: 'hladnokrovniy-zashchitnik'
+            });
+          },
+          primary: true
+        }
+      ]
+    );
+
+  } else {
+    
+    this.showMessage(
+      'Хорошо, но можно лучше!',
+      `Вы набрали <strong>${this.score}</strong> очков.<br><br>` 
+     ,
+      [
+        {
+          text: 'Перепройти',
+          action: () => location.reload(),
+          primary: true
+        }
+      ]
     );
   }
+}
 
   async start() {
     this.render();

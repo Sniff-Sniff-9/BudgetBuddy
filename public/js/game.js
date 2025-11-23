@@ -1,13 +1,13 @@
-// game.js — минимальный движок: загружает конфиг, инстанцирует нужный Level
-import('./levels/BaseLevel.js').then(()=>{}).catch(()=>{ /* ignore for now */ });
 
-/* --- Простейший парсер query param --- */
+import('./levels/BaseLevel.js').then(()=>{}).catch(()=>{  });
+
+import { } from './save_system.js';
+
 function getParam(name){
   const params = new URLSearchParams(location.search);
   return params.get(name);
 }
 
-/* --- Встроенные конфигурации (позже вынести в levels-config/*.json или в Firebase) --- */
 const LEVELS = {
   "nakopleniya-level1": {
     id: "nakopleniya-level1",
@@ -65,7 +65,7 @@ const LEVELS = {
   topic: "bezopasnost",
   hintText: "Настоящий сотрудник банка никогда не попросит вас назвать CVV код или PIN-код карты. Будьте внимательны и проверяйте источники!",
   
-  // Основные ситуации и варианты ответов
+  
   questions: [
     {
       id: 1,
@@ -182,13 +182,13 @@ const LEVELS = {
 
 };
 
-/* --- Динамическая загрузка классов модулей (минимально: импортируем код из файлов уровней) --- */
+
 async function loadLevelModule(type){
   if(type === 'budget'){
     return import('./levels/BudgetLevel.js');
   } else if(type === 'fraud'){
     return import('./levels/FraudLevel.js');
-  } else if(type === 'security'){  // новый тип
+  } else if(type === 'security'){  
     return import('./levels/SecurityLevel.js');
   } else {
     throw new Error('Unknown level type: ' + type);
@@ -196,29 +196,27 @@ async function loadLevelModule(type){
 }
 
 function loadLevelStyles(levelType) {
-  // Удаляем предыдущий CSS, если был
+  
   const prevLink = document.getElementById('level-css');
   if (prevLink) prevLink.remove();
 
-  // Создаем новый <link>
+ 
   const link = document.createElement('link');
   link.id = 'level-css';
   link.rel = 'stylesheet';
   link.type = 'text/css';
 
   if (levelType === 'fraud') {
-    link.href = './styles/moshenichestvo_level1_style.css'; // путь к стилям мошенничества
+    link.href = './styles/moshenichestvo_level1_style.css'; 
   } else if (levelType === 'budget') {
-    link.href = './styles/nakopleniya_level1.css'; // путь к стилям бюджета
+    link.href = './styles/nakopleniya_level1.css'; 
   } else if (levelType === 'security') {
-    link.href = './styles/bezopasnost_level1_style.css'; // путь к стилям бюджета
+    link.href = './styles/bezopasnost_level1_style.css'; 
   }
 
   document.head.appendChild(link);
 }
 
-/* --- Render shell (header + containers) --- */
-/* --- Render shell (header + containers) --- */
 function renderShell(config){
   const shell = document.getElementById('level-shell');
   shell.innerHTML = `
@@ -241,7 +239,7 @@ function renderShell(config){
     <div class="level-body" id="levelBody"></div>
   `;
 
-  // hint toggle (поведение как в fraud-level)
+  
   const hintIndicator = shell.querySelector('.hint-indicator');
   const hintPopup = shell.querySelector('.hint-popup');
   hintIndicator.addEventListener('click', (e) => {
@@ -249,13 +247,13 @@ function renderShell(config){
     hintPopup.classList.toggle('show');
   });
   document.addEventListener('click', (e) => {
-    // не закрываем если клик по индикатору или самому попапу
+    
     if (!hintIndicator.contains(e.target) && !hintPopup.contains(e.target)) {
       hintPopup.classList.remove('show');
     }
   });
 
-  // exit button behaviour: confirm и переход на levels.html?topic=...
+  
   const exitBtn = shell.querySelector('.exit-button');
   exitBtn.addEventListener('click', () => {
     if (confirm('Выйти из уровня? Прогресс не будет сохранен.')) {
@@ -264,14 +262,12 @@ function renderShell(config){
     }
   });
 
-  // наполнение подсказки, если есть в конфиге
+  
   if (config.hintText) {
     hintPopup.innerHTML = config.hintText;
   }
 }
 
-
-/* --- Main bootstrap --- */
 (async function(){
   const levelParam = getParam('level') || 'nakopleniya-level1';
   const config = LEVELS[levelParam];
@@ -284,7 +280,6 @@ function renderShell(config){
   loadLevelStyles(config.type);
   renderShell(config);
 
-  // dynamic import of level class
   const module = await loadLevelModule(config.type);
   const LevelClass = module.default;
   const levelInstance = new LevelClass(config, {

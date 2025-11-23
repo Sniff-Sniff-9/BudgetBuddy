@@ -1,7 +1,7 @@
 import { auth, db, doc, getDoc, updateDoc, arrayUnion, onAuthStateChanged } from '../firebase.js';
-import { addXP } from '../level_up_modal.js';  // ← Вот и всё! Только это добавили
+import { addXP } from '../level_up_modal.js';  
 
-// BaseLevel.js
+
 export default class BaseLevel {
   constructor(config, opts = {}){
     this.config = config;
@@ -10,9 +10,11 @@ export default class BaseLevel {
   }
 
   async start(){
-    // базовый рендер — subclasses должны переопределять render() + bind()
+    
+    
     if(this.render) this.render();
     if(this.bind) this.bind();
+
   }
 
   setHint(text){
@@ -20,26 +22,69 @@ export default class BaseLevel {
     if(popup) popup.innerHTML = text;
   }
 
-  showMessage(title, text, onOk){
-    const overlay = document.createElement('div');
-    overlay.className = 'overlay';
-    const msg = document.createElement('div');
-    msg.className = 'game-message';
-    msg.innerHTML = `
-      <h2>${title}</h2>
-      <p>${text}</p>
-      <div style="text-align:center"><button class="btn" id="gm-ok">Ок</button></div>
-    `;
-    document.body.append(overlay, msg);
-    document.getElementById('gm-ok').onclick = () => {
-      overlay.remove(); msg.remove();
-      if(typeof onOk === 'function') onOk();
-    };
+showMessage(title, text, buttons = []) {
+  
+  if (typeof buttons === 'function') {
+    buttons = [{ text: 'Ок', action: buttons, primary: true }];
   }
 
+ 
+  if (!Array.isArray(buttons)) {
+    buttons = [buttons];
+  }
+
+ 
+  if (buttons.length === 0) {
+    buttons = [{ text: 'Ок', action: () => {}, primary: true }];
+  }
+
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+
+  const msg = document.createElement('div');
+  msg.className = 'game-message';
+
+ 
+  const buttonsHtml = buttons
+    .map(btn => {
+      const cls = btn.primary ? 'btn-primary' : 'btn-secondary';
+      return `<button class="btn ${cls}" data-action="${buttons.indexOf(btn)}">${btn.text}</button>`;
+    })
+    .join('');
+
+  msg.innerHTML = `
+    <h2>${title}</h2>
+    <p>${text}</p>
+    <div class="message-buttons">
+      ${buttonsHtml}
+    </div>
+  `;
+
+  document.body.append(overlay, msg);
+
+ 
+  msg.querySelectorAll('[data-action]').forEach(btnEl => {
+    const idx = btnEl.dataset.action;
+    btnEl.onclick = () => {
+      overlay.remove();
+      msg.remove();
+      if (typeof buttons[idx].action === 'function') {
+        buttons[idx].action();
+      }
+    };
+  });
+}
+
+async autosave() {
+  if (this.getSaveData) {
+    await saveProgress(this.config.id, this.getSaveData());
+  }
+}
     
   async completeLevel(options) {
+  
     const levelId = options?.levelId || "moshenichestvo-level1";
+    const achievementId =  options?.achievementId;
     const xp = options?.xp || 100;
     const redirect = options?.redirect || 'levels.html?topic=moshenichestvo';
 
@@ -56,7 +101,8 @@ export default class BaseLevel {
 
       try {
         await updateDoc(userRef, {
-          completedLevels: arrayUnion(levelId)
+          completedLevels: arrayUnion(levelId),
+          completedAchievements: arrayUnion(achievementId)
         });
       } catch (e) {
         console.warn('Не удалось сохранить прогресс уровня:', e);

@@ -28,6 +28,25 @@ h1 {
 }
 
 
+.profile-wrapper {
+  width: 100%;
+  max-width: 420px;       
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+
+.profile-header {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto 28px;
+  padding: 0 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
 .profile-container {
   display: flex;
   flex-direction: column;
@@ -188,7 +207,7 @@ h1 {
   height: 3rem;
   background-color: #d1d5db; 
   border-radius: 9999px;
-  background-image: url('../images/achiv.png');
+
   background-size: cover;
   background-position: center;
 }
@@ -207,13 +226,12 @@ h1 {
   color: white;
 }
 
-/* Кнопка перехода к достижениям */
-/* Белая круглая кнопка со стрелкой */
+
 .achievements-btn {
   width: 30px;
   height: 30px;
   background: white;
-  color: var(--accent);           /* твой фиолетовый цвет */
+  color: var(--accent);          
   border: none;
   border-radius: 50%;
   display: flex;
@@ -235,7 +253,7 @@ h1 {
   font-weight: 900;
 }
 
-/* На мобильных чуть меньше */
+
 @media (max-width: 480px) {
   .achievements-btn {
       width: 30px;
@@ -247,7 +265,6 @@ h1 {
   }
 }
 
-/* Опционально: заблокированное достижение */
 .achievement-icon.locked {
   background-color: rgba(255, 255, 255, 0.15);
   background-image: none;
@@ -277,7 +294,7 @@ h1 {
 
 .difficulty-section p{
   margin: 0;
-  text-align: left;
+  text-align: center;
   margin-bottom: 0.5rem;
 }
 
@@ -312,15 +329,21 @@ h1 {
   margin: 0;
 }
 
-/* Контейнер для canvas — делает диаграмму круглой и центрирует */
+
 .chart-container {
   position: relative;
   width: 180px;
-  height: 100px;              /* высота = половина ширины → идеальный полукруг */
+  height: 100px;             
   margin: 0 auto 1rem auto;
+  display: none;
 }
 
-/* Сам canvas — убираем все фиксированные размеры */
+
+.chart-container.active {
+  display: block;
+}
+
+
 #levelsChart {
   width: 100% !important;
   height: 100% !important;
@@ -338,6 +361,7 @@ h1 {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  
 }
 
 .no-levels-message.active {
@@ -349,7 +373,7 @@ h1 {
   display: none !important;
 }
 
-/* ==================== МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ ПРОФИЛЯ ==================== */
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -373,7 +397,7 @@ h1 {
   overflow-y: auto;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
   animation: slideUp 0.45s ease-out;
-  font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
+  font-family: 'Montserrat', sans-serif;
 }
 
 /* Заголовок */
@@ -411,12 +435,12 @@ h1 {
   color: #666;
 }
 
-/* Форма */
+
 .edit-profile-form {
   padding: 24px;
 }
 
-/* Поля ввода — теперь НИЧЕГО не вылазит */
+
 .form-group {
   margin-bottom: 20px;
 }
@@ -493,7 +517,7 @@ h1 {
   box-shadow: 0 8px 20px rgba(122, 69, 188, 0.3);
 }
 
-/* Кнопки внизу */
+
 .form-actions {
   display: flex;
   gap: 12px;
@@ -510,6 +534,7 @@ h1 {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.25s;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .btn-primary {
@@ -532,7 +557,7 @@ h1 {
   background: #e9ecef;
 }
 
-/* Анимации */
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -543,7 +568,7 @@ h1 {
   to { transform: translateY(0); opacity: 1; }
 }
 
-/* Мобильная адаптация */
+
 @media (max-width: 480px) {
   .edit-profile-modal {
     border-radius: 20px;
@@ -568,7 +593,7 @@ h1 {
   }
 }
 
-/* Аватар */
+
 .avatar-upload {
   text-align: center;
   margin-bottom: 24px;
@@ -602,7 +627,7 @@ h1 {
   background: var(--accent);
 }
 
-/* Кнопки */
+
 .form-actions {
   display: flex;
   gap: 12px;
@@ -629,11 +654,10 @@ h1 {
   color: #333;
 }
 
-/* Анимации */
+
 @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
 @keyframes slideUp { from {transform: translateY(50px); opacity: 0;} to {transform: translateY(0); opacity: 1;} }
 
-/* Кнопка редактирования профиля — в стиле твоего проекта */
 .btn-edit-profile {
   margin-top: 16px;
   padding: 12px 20px;
@@ -642,7 +666,7 @@ h1 {
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 16px;
-  color: white;
+  color: var(--dark-accent);
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
@@ -651,6 +675,7 @@ h1 {
   gap: 10px;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  font-family: 'Montserrat', sans-serif;
 }
 
 .btn-edit-profile:hover {
@@ -663,30 +688,16 @@ h1 {
   transform: translateY(0);
 }
 
-.edit-icon {
-  width: 20px;
-  height: 20px;
-  filter: brightness(0) invert(1); /* белый карандашик */
+
+.btn-edit-profile .edit-icon {
+  width: 18px;
+  height: 18px;
+  filter: none;                        
+  stroke: var(--dark-accent);         
+  fill: none;
 }
 
-/* Если хочешь ещё круче — с градиентом как у карточек */
-.btn-edit-profile.gradient {
-  background: linear-gradient(135deg, rgba(178, 128, 240, 0.3), rgba(98, 50, 158, 0.3));
-  border: none;
-}
 
-/*КНОПКА ВЫХОДА!!!!!*/
-.profile-header {
-  position: relative;
-  width: 100%;
-  max-width: 560px;
-  margin: 0 auto 28px;
-  padding: 0 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;   /* равномерно распределяет */
-  box-sizing: border-box;
-}
 
 .page-title {
   margin: 0;
@@ -696,10 +707,10 @@ h1 {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  pointer-events: none;   /* чтобы не мешал кликам */
+  pointer-events: none;   
 }
 
-/* Кнопка слева (и можно будет сделать справа, просто добавив класс right) */
+
 .header-icon-btn {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
@@ -732,17 +743,17 @@ h1 {
   transition: stroke 0.3s ease;
 }
 
-/* Пустой блок справа — нужен, чтобы центрирование было идеальным */
+
 .header-placeholder {
   width: 44px;
   height: 44px;
   flex-shrink: 0;
 }
 
-/* Мобильная версия */
+
 @media (max-width: 480px) {
   .profile-header {
-    padding: 0 16px;
+    padding: 0 10px;
     margin-bottom: 24px;
   }
   
@@ -762,3 +773,11 @@ h1 {
   }
 }
 
+
+.achievement-icon.locked {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='11' width='18' height='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E");
+  background-size: 48%;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.5;
+}

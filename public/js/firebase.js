@@ -1,4 +1,4 @@
-// public/js/firebase.js
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updatePassword } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import { 
@@ -9,10 +9,10 @@ import {
   updateDoc, 
   arrayUnion, 
   increment,
-  collection,      // ДОБАВИЛ
-  getDocs,         // ДОБАВИЛ
-  query,           // ДОБАВИЛ
-  where            // ДОБАВИЛ
+  collection,     
+  getDocs,       
+  query,         
+  where          
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 import { 
@@ -49,13 +49,13 @@ export {
   updateDoc, 
   arrayUnion, 
   increment,
-  collection,   // ЭКСПОРТИРУЕМ!
-  getDocs,      // ЭКСПОРТИРУЕМ!
-  query,        // ЭКСПОРТИРУЕМ!
+  collection,   
+  getDocs,      
+  query,       
   where,
   updatePassword,   
   storage, 
   ref, 
   uploadBytes, 
-  getDownloadURL // ЭКСПОРТИРУЕМ!
+  getDownloadURL 
 };
